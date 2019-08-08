@@ -1,0 +1,19 @@
+{
+  "name": "bet-app",
+  "version": "1.0.0",
+  "description": "bet app",
+  "main": "index.js",
+  "scripts": {
+    "test": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jlegaye/bet-app.git"
+  },
+  "author": "Johann Legaye",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jlegaye/bet-app/issues"
+  },
+  "homepage": "https://github.com/jlegaye/bet-app#readme"
+}
