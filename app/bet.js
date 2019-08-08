@@ -2,10 +2,6 @@ const puppeteer = require('puppeteer')
 const util = require('util')
 
 const launchOptions = {
-  args: [
-    '--no-sandbox',
-    '--disable-setuid-sandbox',
-  ],
   headless: true
 }
 
