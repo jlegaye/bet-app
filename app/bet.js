@@ -3,7 +3,7 @@ const util = require('util')
 
 const launchOptions = {
   headless: true,
-  args: ['--no-sandbox'] 
+  args: ['--no-sandbox']  
 }
 
 const goToOptions = {
