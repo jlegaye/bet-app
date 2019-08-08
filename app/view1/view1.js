@@ -171,7 +171,8 @@ angular.module('myApp.view1', ['ngRoute'])
           ctrl.results = response.data
         })
         .catch(function(data) {
-          console.log('Error: ' + data);
+          console.log('Error: ');
+          console.log(data);
           ctrl.isLoading = false
         });
 
