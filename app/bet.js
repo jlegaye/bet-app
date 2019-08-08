@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer')
 const util = require('util')
 
-const launchOptions = {
+const launchOptions = { 
   headless: true
 }
 
