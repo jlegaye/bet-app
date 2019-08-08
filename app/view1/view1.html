@@ -1,3 +1,20 @@
 <p>This is the partial for view 1.</p>
+<md-input-container>
+  <label>Country</label>
+  <md-select ng-model="country" ng-change="refreshLeagues()">
+    <md-option ng-repeat="c in countries" ng-value="c">
+      {{c}}
+    </md-option>
+  </md-select>
+</md-input-container>
+<md-input-container>
+  <label>League</label>
+  <md-select ng-model="league">
+    <md-option ng-repeat="l in leagues" ng-value="l">
+      {{l}}
+    </md-option>
+  </md-select>
+</md-input-container>
+
 <md-button ng-click="getResults()">CLICK</md-button>
 <p>{{results}}</p>

@@ -6,14 +6,15 @@ const launchOptions = {
 }
 
 const goToOptions = {
-  timeout: 10000,
+  timeout: 20000,
   waitUntil: 'networkidle0'
 }
 
-const leagues = [{
+const leagues = [
+  {
     country: 'FRANCE',
     league: 'LIGUE 1'
-  }/*, {
+  }, {
     country: 'FRANCE',
     league: 'LIGUE 2'
   }, {
@@ -144,7 +145,7 @@ const leagues = [{
   }, {
     country: 'UKRAINE',
     league: 'PREMIER LEAGUE'
-  }*/
+  }
 ]
 
 async function resolveTeamUrl(browser, teamUrl) {
@@ -439,13 +440,13 @@ let getTeamUrls = () => {
 }
 
 
-function resolveAllSoccerLeagues(browser) {
+function resolveAllSoccerLeagues(browser, country, league) {
   return new Promise(resolve => {
 
     let allTeamsUrls = []
     let allResults = []
 
-    leagues.reduce((promise, nextLeague) => {
+    leagues.filter(item => item.country == country && item.league == league).reduce((promise, nextLeague) => {
       return promise
         .then((result) => {
           return getSoccerTeamUrls(browser, nextLeague.country, nextLeague.league, nextLeague.seasonOffset).then(teamUrls => {
@@ -505,14 +506,14 @@ let olderFirst = (a, b) => {
   }
 }
 
-async function resolveSoccer() {
+async function resolveSoccer(country, league) {
   const browser = await puppeteer.launch(launchOptions);
-  var result = await resolveAllSoccerLeagues(browser);
+  var result = await resolveAllSoccerLeagues(browser, country, league);
   await browser.close()
   return result
 }
 
-resolveSoccer().then((res) => console.log(util.inspect(res, false, null, false)));
+// resolveSoccer().then((res) => console.log(util.inspect(res, false, null, false)));
 
 module.exports = {
   resolveSoccer
