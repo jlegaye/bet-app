@@ -2,7 +2,7 @@
   "name": "bet-app",
   "version": "1.0.0",
   "description": "bet app",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "*"
   },
@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/jlegaye/bet-app/issues"
   },
-  "homepage": "https://github.com/jlegaye/bet-app#readme"
+  "homepage": "https://github.com/jlegaye/bet-app#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
