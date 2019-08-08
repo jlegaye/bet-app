@@ -2,7 +2,8 @@ const puppeteer = require('puppeteer')
 const util = require('util')
 
 const launchOptions = {
-  headless: true
+  headless: true,
+  args: ['--no-sandbox']
 }
 
 const goToOptions = {
