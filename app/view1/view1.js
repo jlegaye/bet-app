@@ -192,6 +192,21 @@ angular.module('myApp.view1', ['ngRoute'])
 
     }
 
+    ctrl.getNextEventsToBet = function() {
+      $http.get('/api/nextEventsToBet', {
+          timeout: 1000000
+        })
+        .then(function(response) {
+          console.log('result')
+          ctrl.nextEventsToBet = response.data
+        })
+        .catch(function(data) {
+          console.log('Error: ');
+          console.log(data);
+        });
+
+    }
+
     ctrl.createEvent = function() {
       let data = {
         'home': 'test1',

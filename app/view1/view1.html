@@ -21,3 +21,15 @@
 <md-button ng-click="getEvents()">get Events from DB</md-button>
 <p>{{events}}</p>
 <md-button ng-click="createEvent()">create Event in DB</md-button>
+<md-button ng-click="getNextEventsToBet()">get Next Events to Bet</md-button>
+<ul>
+    <li ng-repeat="eventToBet in nextEventsToBet">
+      <div>{{eventToBet.nextMatch.dateString}}</div>
+      <div>{{eventToBet.country}}</div>
+      <div>{{eventToBet.league}}</div>
+      <div>{{eventToBet.team}}</div>
+      <div>{{eventToBet.nbFinishedMatches}}</div>
+      <div>{{eventToBet.maxNoWoGoalAtHTIteration}}</div>
+      <div>{{eventToBet.nextMatch.homeTeam}} VS {{eventToBet.nextMatch.awayTeam}}</div>
+    </li>
+  </ul>

@@ -3,7 +3,7 @@ const util = require('util')
 
 const launchOptions = {
   headless: true,
-  args: ['--no-sandbox']  
+  args: ['--no-sandbox']
 }
 
 const goToOptions = {
@@ -497,6 +497,45 @@ function resolveAllSoccerLeagues(browser, country, league) {
   })
 }
 
+function getAllSoccerEvents(browser, country, league) {
+  console.log(country)
+  console.log(league)
+  return new Promise(resolve => {
+
+    let allTeamsUrls = []
+    let allResults = []
+
+    leagues.filter(item => item.country == country && item.league == league).reduce((promise, nextLeague) => {
+      return promise
+        .then((result) => {
+          return getSoccerTeamUrls(browser, nextLeague.country, nextLeague.league, nextLeague.seasonOffset).then(teamUrls => {
+            allTeamsUrls.push(teamUrls)
+
+          });
+        })
+        .catch(console.error);
+    }, Promise.resolve()).then(r => {
+      // console.log(util.inspect(allTeamsUrls, false, null, false))
+      let flattenAllTeamsUrls = [].concat.apply([], allTeamsUrls)
+
+      flattenAllTeamsUrls.reduce((promise, nextTeamWithUrls) => {
+        return promise
+          .then((result) => {
+            return resolveTeamAndUrls(browser, nextTeamWithUrls).then(teamUrls => {
+              allResults.push(teamUrls)
+
+            });
+          })
+          .catch(console.error);
+      }, Promise.resolve()).then(r => {
+        let flattenAllTeamsResolutions = [].concat.apply([], allResults)
+
+        resolve(flattenAllTeamsUrls)
+      })
+    })
+  })
+}
+
 let olderFirst = (a, b) => {
   if (a.nextEvent !== undefined && b.nextEvent !== undefined) {
     return (a.nextEvent.nextEventDate > b.nextEvent.nextEventDate) ? 1 : ((b.nextEvent.nextEventDate > a.nextEvent.nextEventDate) ? -1 : 0)
@@ -514,8 +553,17 @@ async function resolveSoccer(country, league) {
   return result
 }
 
+async function getAllEvents(country, league) {
+  console.log('getAllEvents')
+  const browser = await puppeteer.launch(launchOptions);
+  var result = await getAllSoccerEvents(browser, country, league);
+  await browser.close()
+  return result
+}
+
 // resolveSoccer().then((res) => console.log(util.inspect(res, false, null, false)));
 
 module.exports = {
-  resolveSoccer
+  resolveSoccer,
+  getAllEvents
 };
