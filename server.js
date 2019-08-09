@@ -21,5 +21,5 @@ app.get('/', function(req, res) {
 require('./app/routes.js')(app);
 
 app.listen(port, function() {
-    console.log('Our app is running on http://localhost:' + port);
+  console.log('Our app is running on http://localhost:' + port);
 });
