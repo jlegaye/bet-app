@@ -194,10 +194,11 @@ async function extractEventsResultsFromLeagueUrl(browser, leagueResultsUrl) {
 
         let isMatchLine = scoreRow.querySelector('.score_ko') !== null && scoreRow.querySelector('.score_ko').innerText.trim() !== ''
         if (isMatchLine) {
-          let isFinished = scoreRow.querySelector('.score_time').innerText.trim().toUpperCase() == 'FIN'
-          let notPost = scoreRow.querySelector('.score_time').innerText.trim().toUpperCase() !== 'POST' && scoreRow.querySelector('.score_time').innerText.trim().toUpperCase() !== 'CANC'
-          let eventNotDone = scoreRow.querySelector('.score_time').innerText.trim().toUpperCase() == 'SCH'
-
+          let status = scoreRow.querySelector('.score_time').innerText.trim().toUpperCase()
+          let isFinished = status == 'FIN'
+          /*let notPost = status !== 'POST' && status !== 'CANC'
+          let eventNotDone = status == 'SCH'*/
+          event.status = status
           let eventHour = scoreRow.querySelector('.score_ko').innerText.trim()
           event.hour = eventHour
           let homeTeam = scoreRow.querySelector('.score_home_txt').innerText.trim()

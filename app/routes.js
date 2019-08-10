@@ -32,6 +32,7 @@ module.exports = function(app) {
     country: String,
     league: String,
     season: String,
+    status: String,
     homeTeam: String,
     awayTeam: String,
     htScore: String,
@@ -82,20 +83,23 @@ module.exports = function(app) {
   app.get('/api/refreshAllDatabase', function(req, res) {
 
     // events.getAllLastSeasonEvents()
-      events.getAllEvents()
+    events.getAllEvents()
       // events.getAllEventsByCountryAndLeague('USA', 'MAJOR LEAGUE SOCCER')
       .then((result) => {
         // save multiple documents to the collection referenced by Book Model
         for (var event of result) {
-          Event.findByIdAndUpdate(event['_id'], event, {
-            upsert: true
-          }, function(err, docs) {
-            if (err) {
-              return console.error(err);
-            } else {
-              console.log("Document inserted to Collection");
-            }
-          });
+          if (event !== undefined) {
+            Event.findByIdAndUpdate(event['_id'], event, {
+              upsert: true
+            }, function(err, docs) {
+              if (err) {
+                return console.error(err);
+              } else {
+                console.log("Document inserted to Collection");
+              }
+            });
+
+          }
         }
 
       })
@@ -116,12 +120,12 @@ module.exports = function(app) {
     promise0.then(teams => {
 
       let promises = teams.map(team => {
-        let nowDate = new Date()
-        let nowTime = nowDate.getTime()
+        // let nowDate = new Date()
+        // let nowTime = nowDate.getTime()
         let query = Event.find({
           $and: [{
-            date: {
-              $gt: nowTime
+            status: {
+              $eq: 'FIN'
             }
           }, {
             $or: [{
@@ -166,8 +170,8 @@ module.exports = function(app) {
             // if (finishedMatches.length > 20 && finishedMatches[0].country == 'USA') {
             let query2 = Event.find({
               $and: [{
-                ftScore: {
-                  $eq: null
+                status: {
+                  $eq: 'SCH'
                 }
               }, {
                 $or: [{
