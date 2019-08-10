@@ -228,6 +228,21 @@ angular.module('myApp.view1', ['ngRoute'])
 
     }
 
+    ctrl.refreshAllDatabase = function() {
+      $http.get('/api/refreshAllDatabase', {
+          timeout: 1000000
+        })
+        .then(function(response) {
+          console.log(response)
+
+        })
+        .catch(function(data) {
+          console.log('Error: ');
+          console.log(data);
+        });
+
+    }
+
     ctrl.createEvent = function() {
       let data = {
         'home': 'test1',

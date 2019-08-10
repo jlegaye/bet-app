@@ -79,6 +79,32 @@ module.exports = function(app) {
     })
   })
 
+  app.get('/api/refreshAllDatabase', function(req, res) {
+
+    // events.getAllLastSeasonEvents()
+      events.getAllEvents()
+      // events.getAllEventsByCountryAndLeague('USA', 'MAJOR LEAGUE SOCCER')
+      .then((result) => {
+        // save multiple documents to the collection referenced by Book Model
+        for (var event of result) {
+          Event.findByIdAndUpdate(event['_id'], event, {
+            upsert: true
+          }, function(err, docs) {
+            if (err) {
+              return console.error(err);
+            } else {
+              console.log("Document inserted to Collection");
+            }
+          });
+        }
+
+      })
+      .catch((err) => console.log(err))
+    res.json({
+      'ok': 'ok'
+    })
+  })
+
   app.get('/api/nextEventsToBet', function(req, res) {
 
     let query0 = Event.find({
