@@ -112,8 +112,8 @@ module.exports = function(app) {
   app.get('/api/nextEventsToBet', function(req, res) {
 
     let query0 = Event.find({
-      ftScore: {
-        $eq: null
+      status: {
+        $eq: 'SCH'
       }
     }).distinct('homeTeam')
     let promise0 = query0.exec()
