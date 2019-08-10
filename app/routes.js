@@ -116,10 +116,12 @@ module.exports = function(app) {
     promise0.then(teams => {
 
       let promises = teams.map(team => {
+        let nowDate = new Date()
+        let nowTime = nowDate.getTime()
         let query = Event.find({
           $and: [{
-            ftScore: {
-              $ne: null
+            date: {
+              $gt: nowTime
             }
           }, {
             $or: [{
