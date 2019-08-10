@@ -1,4 +1,4 @@
-<p>This is the partial for view 1.</p>
+<!-- <p>This is the partial for view 1.</p>
 <md-input-container>
   <label>Country</label>
   <md-select ng-model="country" ng-change="refreshLeagues()">
@@ -14,22 +14,51 @@
       {{l}}
     </md-option>
   </md-select>
-</md-input-container>
+</md-input-container> -->
 
-<md-button ng-click="getResults()">get Results</md-button>
+<!-- <md-button ng-click="getResults()">get Results</md-button>
 <p>{{results}}</p>
 <md-button ng-click="getEvents()">get Events from DB</md-button>
-<p>{{events}}</p>
-<md-button ng-click="createEvent()">create Event in DB</md-button>
-<md-button ng-click="getNextEventsToBet()">get Next Events to Bet</md-button>
-<ul>
-    <li ng-repeat="eventToBet in nextEventsToBet">
-      <div>{{eventToBet.nextMatch.dateString}}</div>
-      <div>{{eventToBet.country}}</div>
-      <div>{{eventToBet.league}}</div>
-      <div>{{eventToBet.team}}</div>
-      <div>{{eventToBet.nbFinishedMatches}}</div>
-      <div>{{eventToBet.maxNoWoGoalAtHTIteration}}</div>
-      <div>{{eventToBet.nextMatch.homeTeam}} VS {{eventToBet.nextMatch.awayTeam}}</div>
-    </li>
-  </ul>
+<p>{{events}}</p> -->
+<!-- <md-button ng-click="createEvent()">create Event in DB</md-button> -->
+
+<section layout="row" layout-sm="column" layout-align="center center" layout-wrap>
+  <md-button class="md-raised md-warn" ng-click="refreshDatabase()">Refresh with last Results</md-button>
+  <md-button class="md-raised md-primary" ng-click="getNextEventsToBet()">get Next Events to bet</md-button>
+  <!-- <div class="label">Actions</div> -->
+</section>
+
+<section layout="row" layout-sm="column" layout-align="center center" layout-wrap>
+
+
+</section>
+
+<div ng-show="!isLoading">
+  <div ng-show="nextEventsToBet.length == 0">NO RESULT FOUND</div>
+  <md-list class="md-dense" flex>
+    <!-- <md-subheader class="md-no-sticky">3 line item (dense)</md-subheader> -->
+    <md-list-item class="md-3-line" ng-repeat="eventToBet in nextEventsToBet">
+      <div class="md-list-item-text" layout="column">
+        <h2>{{eventToBet.country}} ({{eventToBet.league}}) {{eventToBet.nextMatch.dateString}}</h2>
+        <h2><span class="ng-style: eventToBet.nextMatch.homeTeam == eventToBet.team && {color: 'blue'};">{{eventToBet.nextMatch.homeTeam}}</span> <span class="logo-versus"><span> <span class="ng-style: eventToBet.nextMatch.awayTeam == eventToBet.team && {color: 'blue'};">{{eventToBet.nextMatch.awayTeam}}</span></h2>
+        <h3>Number of matches without goal at halfTime: <span style="color:blue">{{eventToBet.maxNoWoGoalAtHTIteration}}</span></h3>
+        <h3>Number of matches calculated: <span style="color:blue">{{eventToBet.nbFinishedMatches}}</span></h3>
+      </div>
+    </md-list-item>
+  </md-list>
+</div>
+<div ng-show="isLoading">
+  <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+</div>
+
+<!-- <ul>
+  <li ng-repeat="eventToBet in nextEventsToBet">
+    <div>{{eventToBet.nextMatch.dateString}}</div>
+    <div>{{eventToBet.country}}</div>
+    <div>{{eventToBet.league}}</div>
+    <div>{{eventToBet.team}}</div>
+    <div>{{eventToBet.nbFinishedMatches}}</div>
+    <div>{{eventToBet.maxNoWoGoalAtHTIteration}}</div>
+    <div>{{eventToBet.nextMatch.homeTeam}} VS {{eventToBet.nextMatch.awayTeam}}</div>
+  </li>
+</ul> -->

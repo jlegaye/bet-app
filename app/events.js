@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer')
 const util = require('util')
 const fs = require('fs')
 
-const nbOfSeasons = 4
+let nbOfSeasons = 10
 const launchOptions = {
   headless: true,
   args: ['--no-sandbox']
@@ -154,12 +154,23 @@ const leagues = [{
 async function extractEventsResultsFromLeagueUrl(browser, leagueResultsUrl) {
   console.log('leagueResultsUrl: ' + leagueResultsUrl)
   const page = await browser.newPage()
-  await page.goto(leagueResultsUrl, goToOptions)
+  page.setDefaultNavigationTimeout(5000)
+  await page.goto(leagueResultsUrl, goToOptions).catch((error) => {
+    console.log('Cannot go to ' + leagueResultsUrl)
+    console.log(error)
+  })
   await page.waitFor(50)
   await page.waitFor('.score_home_txt').catch(
     (err) => {
-      page.reload()
-      page.waitFor('.score_home_txt')
+      console.log(err)
+      page.reload().catch(
+        (error) => {
+          console.log("No match for the moment for this seaon!!!")
+        })
+      page.waitFor('.score_home_txt').catch(
+        (error) => {
+          console.log("No match for the moment for this seaon!!!")
+        })
     }
   )
 
@@ -265,7 +276,9 @@ async function extractEventsResultsFromLeagueUrl(browser, leagueResultsUrl) {
 
       return data;
     }
-  )
+  ).catch((error) => {
+    console.log(error)
+  })
 
   await page.close()
   return leagueResults
@@ -275,6 +288,7 @@ async function getSoccerLeagueUrls(browser, country, league, seasonOffset) {
 
   let leagueEventsUrls = []
   const page = await browser.newPage()
+  page.setDefaultNavigationTimeout(5000)
 
   let i = 0
   while (i < nbOfSeasons) {
@@ -488,6 +502,15 @@ async function getAllEvents() {
   return result
 }
 
+async function getAllLastSeasonEvents() {
+  console.log('getAllEvents')
+  nbOfSeasons = 1
+  const browser = await puppeteer.launch(launchOptions);
+  var result = await getAllSoccerEvents(browser);
+  await browser.close()
+  return result
+}
+
 // getAllEvents('USA', 'MAJOR LEAGUE SOCCER').then((res) => {
 //   // stringify JSON Object
 //   var jsonContent = JSON.stringify(res);
@@ -504,6 +527,7 @@ async function getAllEvents() {
 // });
 
 module.exports = {
+  getAllLastSeasonEvents,
   getAllEvents,
   getAllEventsByCountryAndLeague
 };

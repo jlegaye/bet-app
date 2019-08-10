@@ -17,7 +17,8 @@ angular.module('myApp.view1', ['ngRoute'])
       });
     }
 
-    const allLeagues = [{
+    const allLeagues = [
+      {
         country: 'FRANCE',
         league: 'LIGUE 1'
       }, {
@@ -155,7 +156,10 @@ angular.module('myApp.view1', ['ngRoute'])
     ]
 
     var ctrl = $scope;
-    ctrl.results = 'titi';
+
+    ctrl.nextEventsToBet = []
+    ctrl.isLoading = false
+
     ctrl.getResults = function() {
       $http.get('/api/results', {
           timeout: 1000000,
@@ -193,12 +197,29 @@ angular.module('myApp.view1', ['ngRoute'])
     }
 
     ctrl.getNextEventsToBet = function() {
+      ctrl.isLoading = true
       $http.get('/api/nextEventsToBet', {
           timeout: 1000000
         })
         .then(function(response) {
-          console.log('result')
+          ctrl.isLoading = false
           ctrl.nextEventsToBet = response.data
+        })
+        .catch(function(data) {
+          ctrl.isLoading = false
+          console.log('Error: ');
+          console.log(data);
+        });
+
+    }
+
+    ctrl.refreshDatabase = function() {
+      $http.get('/api/refreshDatabase', {
+          timeout: 1000000
+        })
+        .then(function(response) {
+          console.log(response)
+
         })
         .catch(function(data) {
           console.log('Error: ');
