@@ -15,7 +15,8 @@ module.exports = function(app) {
 
   // Nous connectons l'API à notre base de données
   mongoose.connect(urlmongo, {
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    autoIndex: false
   });
   // get reference to database
   var db = mongoose.connection;
@@ -50,6 +51,8 @@ module.exports = function(app) {
   }, {
     _id: false
   });
+
+  EventSchema.index({ homeTeam: 1, awayTeam: 1, date: 1, status: 1 });
 
   // compile schema to model
   var Event = mongoose.model('Event', EventSchema, 'events');
