@@ -184,10 +184,10 @@ async function resolveTeamUrl(browser, teamUrl) {
 
           let scoreRegex = htScore.match(/\d+/ig);
           if (scoreRegex) {
-            let homeHtScore = scoreRegex[0]
-            let awayHtScore = scoreRegex[1]
-            event.halfTimeDraw = homeHtScore == awayHtScore
-            event.halfTimeWoGoal = homeHtScore == 0 && awayHtScore == 0
+            let homeHt1Score = scoreRegex[0]
+            let awayHt1Score = scoreRegex[1]
+            event.halfTime1Draw = homeHt1Score == awayHt1Score
+            event.halfTime1NoGoal = homeHt1Score == 0 && awayHt1Score == 0
           }
           events.push(event)
         } else if (eventNotDone && notPost && !nextEventFound) {
@@ -257,7 +257,7 @@ async function resolveTeamAndUrls(browser, teamAndUrls) {
       team.nbEvents = allEventsTeam2.length
 
       // HALF TIME DRAW
-      let isHTDrawList = allEventsTeam2.map(event => event.halfTimeDraw)
+      let isHTDrawList = allEventsTeam2.map(event => event.halfTime1Draw)
       let maxNoDrawAtHTIteration = 0
       let cpt = 0
       for (var item of isHTDrawList) {
@@ -274,15 +274,15 @@ async function resolveTeamAndUrls(browser, teamAndUrls) {
       let mustBetDrawAtHT = true
       let i = allEventsTeam2.length - 1
       while (i > (allEventsTeam2.length - (maxNoDrawAtHTIteration)) && mustBetDrawAtHT) {
-        if (allEventsTeam2[i].halfTimeDraw) {
+        if (allEventsTeam2[i].halfTime1Draw) {
           mustBetDrawAtHT = false;
         }
         i--;
       }
 
       // HALF TIME 0-0
-      let isHTWoGoalList = allEventsTeam2.map(event => event.halfTimeWoGoal)
-      let maxNoWoGoalAtHTIteration = 0
+      let isHTWoGoalList = allEventsTeam2.map(event => event.halfTime1NoGoal)
+      let maxNoGoalAtHTIteration = 0
       cpt = 0
       for (var item of isHTWoGoalList) {
         if (item) {
@@ -290,15 +290,15 @@ async function resolveTeamAndUrls(browser, teamAndUrls) {
         } else {
           cpt = 0
         }
-        if (cpt > maxNoWoGoalAtHTIteration) {
-          maxNoWoGoalAtHTIteration = cpt
+        if (cpt > maxNoGoalAtHTIteration) {
+          maxNoGoalAtHTIteration = cpt
         }
       }
-      team.maxNoWoGoalAtHTIteration = maxNoWoGoalAtHTIteration
+      team.maxNoGoalAtHTIteration = maxNoGoalAtHTIteration
       let mustBetGoalAtHT = true
       i = allEventsTeam2.length - 1
-      while (i > (allEventsTeam2.length - (maxNoWoGoalAtHTIteration + 1)) && mustBetGoalAtHT) {
-        if (!allEventsTeam2[i].halfTimeWoGoal) {
+      while (i > (allEventsTeam2.length - (maxNoGoalAtHTIteration + 1)) && mustBetGoalAtHT) {
+        if (!allEventsTeam2[i].halfTime1NoGoal) {
           mustBetGoalAtHT = false;
         }
         i--;
@@ -486,7 +486,7 @@ function resolveAllSoccerLeagues(browser, country, league) {
             // mustBetDrawAtHT : teamEvents.mustBetDrawAtHT,
             // maxNoDrawAtHTIteration: teamEvents.maxNoDrawAtHTIteration,
             mustBetGoalAtHT: teamEvents.mustBetGoalAtHT,
-            maxNoWoGoalAtHTIteration: teamEvents.maxNoWoGoalAtHTIteration,
+            maxNoGoalAtHTIteration: teamEvents.maxNoGoalAtHTIteration,
             nbEvents: teamEvents.nbEvents
           }
         })

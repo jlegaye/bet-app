@@ -213,12 +213,16 @@ async function extractEventsResultsFromLeagueUrl(browser, leagueResultsUrl) {
 
             let scoreRegex = htScore.match(/\d+/ig);
             if (scoreRegex) {
-              let homeHtScore = scoreRegex[0]
-              let awayHtScore = scoreRegex[1]
-              event.homeHtScore = parseInt(homeHtScore)
-              event.awayHtScore = parseInt(awayHtScore)
-              event.halfTimeDraw = homeHtScore == awayHtScore
-              event.halfTimeWoGoal = homeHtScore == 0 && awayHtScore == 0
+              let homeHt1Score = scoreRegex[0]
+              let awayHt1Score = scoreRegex[1]
+              let homeHt1ScoreInt = parseInt(homeHt1Score)
+              let awayHt1ScoreInt = parseInt(awayHt1Score)
+              event.homeHt1Score = homeHt1ScoreInt
+              event.awayHt1Score = awayHt1ScoreInt
+              let halfTime1Goals = homeHt1ScoreInt + awayHt1ScoreInt
+              event.halfTime1Goals = halfTime1Goals
+              event.halfTime1Draw = homeHt1ScoreInt == awayHt1ScoreInt
+              event.halfTime1NoGoal = halfTime1Goals == 0
             }
 
             let ftScore = scoreRow.querySelector('.score_score').innerText.trim()
@@ -229,10 +233,26 @@ async function extractEventsResultsFromLeagueUrl(browser, leagueResultsUrl) {
             if (ftScoreRegex) {
               let homeFtScore = ftScoreRegex[0]
               let awayFtScore = ftScoreRegex[1]
-              event.homeFtScore = parseInt(homeFtScore)
-              event.awayFtScore = parseInt(awayFtScore)
-              event.fullTimeDraw = homeFtScore == awayFtScore
-              event.fullTimeWoGoal = homeFtScore == 0 && awayFtScore == 0
+              let homeFtScoreInt = parseInt(homeFtScore)
+              let awayFtScoreInt = parseInt(awayFtScore)
+              event.homeFtScore = homeFtScoreInt
+              event.awayFtScore = awayFtScoreInt
+              let fullTimeGoals = homeFtScoreInt + awayFtScoreInt
+              event.fullTimeGoals = fullTimeGoals
+              event.fullTimeDraw = homeFtScoreInt == awayFtScoreInt
+              event.fullTimeNoGoal = fullTimeGoals == 0
+
+              let homeHt2ScoreInt = homeFtScoreInt - event.homeHt1Score
+              let awayHt2ScoreInt = awayFtScoreInt - event.awayHt1Score
+              event.homeHt2Score = homeHt2ScoreInt
+              event.awayHt2Score = awayHt2ScoreInt
+              let halfTime2Goals = homeHt2ScoreInt + awayHt2ScoreInt
+              event.halfTime2Goals = halfTime2Goals
+              event.halfTime2Draw = homeHt2ScoreInt == awayHt2ScoreInt
+              event.halfTime2NoGoal = halfTime2Goals == 0
+
+              event.secondHalfBetter = event.halfTime2Goals > event.halfTime1Goals
+              event.twoOrThreeGoals = event.fullTimeGoals == 2 || event.fullTimeGoals == 3
             }
           }
           events.push(event)
@@ -242,14 +262,22 @@ async function extractEventsResultsFromLeagueUrl(browser, leagueResultsUrl) {
           if (date.includes('-')) {
             event.date = date
             events.push(event)
+          } else {
+            event.round = date
+            events.push(event)
           }
         }
       }
 
       let eventsWithDate = []
       let currentDate = ''
+      let currentRound = ''
+      console.log('events !!!!')
+      console.log(events)
       for (var ev of events) {
-        if (ev.date) {
+        if (ev.round) {
+          currentRound = parseInt(ev.round.substring(6))
+        } else if (ev.date) {
           let eventDateStr = ev.date
           let eventDateSplitted = eventDateStr.split('-')
           currentDate = eventDateSplitted[2] + '-' + eventDateSplitted[1] + '-' + eventDateSplitted[0]
@@ -267,10 +295,14 @@ async function extractEventsResultsFromLeagueUrl(browser, leagueResultsUrl) {
           })
           ev.dateString = nextEventDateToString
           ev.date = nextEventDateGetTime
+          ev.round = currentRound
           delete ev.hour
           ev['_id'] = nextEventDateGetTime + '_' + ev.homeTeam.replace(/ /g, '_') + '_' + ev.awayTeam.replace(/ /g, '_')
           eventsWithDate.push(ev)
         }
+      }
+      for (var ev of events) {
+        ev.nbOfRounds = currentRound
       }
 
       data = eventsWithDate
@@ -393,7 +425,7 @@ function resolveAllSoccerLeagues(browser, country, league) {
             // mustBetDrawAtHT : teamEvents.mustBetDrawAtHT,
             // maxNoDrawAtHTIteration: teamEvents.maxNoDrawAtHTIteration,
             mustBetGoalAtHT: teamEvents.mustBetGoalAtHT,
-            maxNoWoGoalAtHTIteration: teamEvents.maxNoWoGoalAtHTIteration,
+            maxNoGoalAtHTIteration: teamEvents.maxNoGoalAtHTIteration,
             nbEvents: teamEvents.nbEvents
           }
         })
@@ -512,11 +544,11 @@ async function getAllLastSeasonEvents() {
   return result
 }
 
-// getAllEvents('USA', 'MAJOR LEAGUE SOCCER').then((res) => {
+// getAllEventsByCountryAndLeague('FRANCE', 'LIGUE 1').then((res) => {
 //   // stringify JSON Object
 //   var jsonContent = JSON.stringify(res);
 //
-//   fs.writeFile("output_USA.json", jsonContent, 'utf8', function(err) {
+//   fs.writeFile("output_FRANCE.json", jsonContent, 'utf8', function(err) {
 //     if (err) {
 //       console.log("An error occured while writing JSON Object to File.");
 //       return console.log(err);

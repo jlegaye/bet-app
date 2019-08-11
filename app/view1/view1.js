@@ -17,8 +17,7 @@ angular.module('myApp.view1', ['ngRoute'])
       });
     }
 
-    const allLeagues = [
-      {
+    const allLeagues = [{
         country: 'FRANCE',
         league: 'LIGUE 1'
       }, {
@@ -196,10 +195,13 @@ angular.module('myApp.view1', ['ngRoute'])
 
     }
 
-    ctrl.getNextEventsToBet = function() {
+    ctrl.getNextEventsToBetGoalAtHalfTime = function() {
       ctrl.isLoading = true
       $http.get('/api/nextEventsToBet', {
-          timeout: 1000000
+          timeout: 1000000,
+          params: {
+            method: 'goal_At_Half_Time'
+          }
         })
         .then(function(response) {
           ctrl.isLoading = false
@@ -212,6 +214,68 @@ angular.module('myApp.view1', ['ngRoute'])
         });
 
     }
+
+
+    ctrl.getNextEventsToBet2ndBetter = function() {
+      ctrl.isLoading = true
+      $http.get('/api/nextEventsToBet', {
+          timeout: 1000000,
+          params: {
+            method: '2nd_Half_better'
+          }
+        })
+        .then(function(response) {
+          ctrl.isLoading = false
+          ctrl.nextEventsToBet = response.data
+        })
+        .catch(function(data) {
+          ctrl.isLoading = false
+          console.log('Error: ');
+          console.log(data);
+        });
+
+    }
+
+    ctrl.getNextEventsToBetMore1_5Goal = function() {
+      ctrl.isLoading = true
+      $http.get('/api/nextEventsToBet', {
+          timeout: 1000000,
+          params: {
+            method: 'more_than_1_5_goal'
+          }
+        })
+        .then(function(response) {
+          ctrl.isLoading = false
+          ctrl.nextEventsToBet = response.data
+        })
+        .catch(function(data) {
+          ctrl.isLoading = false
+          console.log('Error: ');
+          console.log(data);
+        });
+
+    }
+
+    ctrl.getNextEventsToBet2Or3Goals = function() {
+      ctrl.isLoading = true
+      $http.get('/api/nextEventsToBet', {
+          timeout: 1000000,
+          params: {
+            method: 'two_or_three_goals'
+          }
+        })
+        .then(function(response) {
+          ctrl.isLoading = false
+          ctrl.nextEventsToBet = response.data
+        })
+        .catch(function(data) {
+          ctrl.isLoading = false
+          console.log('Error: ');
+          console.log(data);
+        });
+
+    }
+
 
     ctrl.refreshDatabase = function() {
       $http.get('/api/refreshDatabase', {

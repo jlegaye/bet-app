@@ -25,7 +25,10 @@
 <section layout="row" layout-sm="column" layout-align="center center" layout-wrap>
   <md-button class="md-raised md-warn" ng-click="refreshAllDatabase()">Refresh with all Results</md-button>
   <md-button class="md-raised md-warn" ng-click="refreshDatabase()">Refresh with last Results</md-button>
-  <md-button class="md-raised md-primary" ng-click="getNextEventsToBet()">get Next Events to bet</md-button>
+  <md-button class="md-raised md-primary" ng-click="getNextEventsToBetGoalAtHalfTime()">get Next Events to bet (Goal at Half Time)</md-button>
+  <md-button class="md-raised md-primary" ng-click="getNextEventsToBet2Or3Goals()">get Next Events to bet (2 or 3 goals)</md-button>
+  <md-button class="md-raised md-primary" ng-click="getNextEventsToBetMore1_5Goal()">get Next Events to bet (More than 1.5 goal)</md-button>
+  <md-button class="md-raised md-primary" ng-click="getNextEventsToBet2ndBetter()">get Next Events to bet (2nd Half better)</md-button>
   <!-- <div class="label">Actions</div> -->
 </section>
 
@@ -40,9 +43,10 @@
     <!-- <md-subheader class="md-no-sticky">3 line item (dense)</md-subheader> -->
     <md-list-item class="md-3-line" ng-repeat="eventToBet in nextEventsToBet">
       <div class="md-list-item-text" layout="column">
-        <h2>{{eventToBet.country}} ({{eventToBet.league}}) {{eventToBet.nextMatch.dateString}}</h2>
+        <h2>{{eventToBet.country}} ({{eventToBet.league}} : {{eventToBet.round}}/{{eventToBet.nbOfRounds}}) {{eventToBet.nextMatch.dateString}}</h2>
         <h2><span class="ng-style: eventToBet.nextMatch.homeTeam == eventToBet.team && {color: 'blue'};">{{eventToBet.nextMatch.homeTeam}}</span> <span class="logo-versus"><span> <span class="ng-style: eventToBet.nextMatch.awayTeam == eventToBet.team && {color: 'blue'};">{{eventToBet.nextMatch.awayTeam}}</span></h2>
-        <h3>Number of matches without goal at halfTime: <span style="color:blue">{{eventToBet.maxNoWoGoalAtHTIteration}}</span></h3>
+        <h3>Method: {{eventToBet.method}}</h3>
+        <h3>Iteration: <span style="color:blue">{{eventToBet.maxIteration}}</span></h3>
         <h3>Number of matches calculated: <span style="color:blue">{{eventToBet.nbFinishedMatches}}</span></h3>
       </div>
     </md-list-item>
@@ -51,15 +55,3 @@
 <div ng-show="isLoading">
   <md-progress-circular md-mode="indeterminate"></md-progress-circular>
 </div>
-
-<!-- <ul>
-  <li ng-repeat="eventToBet in nextEventsToBet">
-    <div>{{eventToBet.nextMatch.dateString}}</div>
-    <div>{{eventToBet.country}}</div>
-    <div>{{eventToBet.league}}</div>
-    <div>{{eventToBet.team}}</div>
-    <div>{{eventToBet.nbFinishedMatches}}</div>
-    <div>{{eventToBet.maxNoWoGoalAtHTIteration}}</div>
-    <div>{{eventToBet.nextMatch.homeTeam}} VS {{eventToBet.nextMatch.awayTeam}}</div>
-  </li>
-</ul> -->

@@ -33,26 +33,42 @@ module.exports = function(app) {
     country: String,
     league: String,
     season: String,
+    round: Number,
+    nbOfRounds: Number,
+    dateString: String,
+    date: Number,
     status: String,
     homeTeam: String,
     awayTeam: String,
     htScore: String,
-    homeHtScore: Number,
-    awayHtScore: Number,
-    halfTimeDraw: Boolean,
-    halfTimeWoGoal: Boolean,
+    homeHt1Score: Number,
+    awayHt1Score: Number,
+    halfTime1Goals: Number,
+    halfTime1Draw: Boolean,
+    halfTime1NoGoal: Boolean,
+    homeHt2Score: Number,
+    awayHt2Score: Number,
+    halfTime2Goals: Number,
+    halfTime2Draw: Boolean,
+    halfTime2NoGoal: Boolean,
     ftScore: String,
     homeFtScore: Number,
     awayFtScore: Number,
+    fullTimeGoals: Number,
     fullTimeDraw: Boolean,
-    fullTimeWoGoal: Boolean,
-    dateString: String,
-    date: Number
+    fullTimeNoGoal: Boolean,
+    secondHalfBetter: Boolean,
+    twoOrThreeGoals: Boolean
   }, {
     _id: false
   });
 
-  EventSchema.index({ homeTeam: 1, awayTeam: 1, date: 1, status: 1 });
+  EventSchema.index({
+    homeTeam: 1,
+    awayTeam: 1,
+    date: 1,
+    status: 1
+  });
 
   // compile schema to model
   var Event = mongoose.model('Event', EventSchema, 'events');
@@ -114,18 +130,16 @@ module.exports = function(app) {
 
   app.get('/api/nextEventsToBet', function(req, res) {
 
-    let query0 = Event.find({
+    let queryToExtractTeams = Event.find({
       status: {
         $eq: 'SCH'
       }
     }).distinct('homeTeam')
-    let promise0 = query0.exec()
-    promise0.then(teams => {
+    let promiseQueryToExtractTeams = queryToExtractTeams.exec()
+    promiseQueryToExtractTeams.then(teams => {
 
-      let promises = teams.map(team => {
-        // let nowDate = new Date()
-        // let nowTime = nowDate.getTime()
-        let query = Event.find({
+      let promisesToAllTeams = teams.map(team => {
+        let queryToExtractAllFinishedMatches = Event.find({
           $and: [{
             status: {
               $eq: 'FIN'
@@ -141,101 +155,296 @@ module.exports = function(app) {
         }).sort({
           date: 'desc'
         })
-        var promise = query.exec();
+        var promiseQueryToExtractAllFinishedMatches = queryToExtractAllFinishedMatches.exec();
 
-        return promise.then(finishedMatches => {
+        return promiseQueryToExtractAllFinishedMatches.then(finishedMatches => {
+          let method = req.query.method
 
-          // HALF TIME 0-0
-          let isHTWoGoalList = finishedMatches.map(event => event.halfTimeWoGoal)
-          let maxNoWoGoalAtHTIteration = 0
-          cpt = 0
-          for (var item of isHTWoGoalList) {
-            if (item) {
-              cpt++
-            } else {
-              cpt = 0
+          if (method == '2nd_Half_better') {
+            // 2nd half better
+            let isNoMoreThan1_5GoalList = finishedMatches.map(event => !event.secondHalfBetter)
+
+            let maxIteration = 0
+            if (isNoMoreThan1_5GoalList.length > 0) {
+
+              var str = isNoMoreThan1_5GoalList.map(bool => Number(bool)).join('').match(/1+/g);
+
+              if (str !== null) {
+                let proc = Math.max(...(str.map(el => el.length)))
+                maxIteration = proc
+              }
             }
-            if (cpt > maxNoWoGoalAtHTIteration) {
-              maxNoWoGoalAtHTIteration = cpt
-            }
-          }
 
-          let mustBetGoalAtHT = true
-          i = 0
-          while (i < maxNoWoGoalAtHTIteration && mustBetGoalAtHT) {
-            if (!finishedMatches[i].halfTimeWoGoal) {
-              mustBetGoalAtHT = false;
+            maxIteration = maxIteration
+            let mustBet = true
+            i = 0
+            while (i < maxIteration && mustBet) {
+              if (finishedMatches[i].secondHalfBetter) {
+                mustBet = false;
+              }
+              i++;
             }
-            i++;
-          }
 
-          if (finishedMatches.length > 20 && mustBetGoalAtHT) {
-            // if (finishedMatches.length > 20 && finishedMatches[0].country == 'USA') {
-            let query2 = Event.find({
-              $and: [{
-                status: {
-                  $eq: 'SCH'
-                }
-              }, {
-                $or: [{
-                  homeTeam: team
+            if (finishedMatches.length > 20 && mustBet) {
+              let queryToExtractNextEvent = Event.findOne({
+                $and: [{
+                  status: {
+                    $eq: 'SCH'
+                  }
                 }, {
-                  awayTeam: team
+                  $or: [{
+                    homeTeam: team
+                  }, {
+                    awayTeam: team
+                  }]
                 }]
-              }]
 
-            }).sort({
-              date: 'asc'
-            })
-            let promise2 = query2.exec()
-            return promise2.then(nonFinishedMatches => {
-              if (nonFinishedMatches.length > 0) {
+              }).sort({
+                date: 'asc'
+              })
+              let promiseQueryToExtractNextEvent = queryToExtractNextEvent.exec()
+              return promiseQueryToExtractNextEvent.then(firstNonFinishedMatch => {
 
                 let event = {}
-                event.country = nonFinishedMatches[0].country
-                event.league = nonFinishedMatches[0].league
+                event.country = firstNonFinishedMatch.country
+                event.league = firstNonFinishedMatch.league
                 event.team = team
                 event.nbFinishedMatches = finishedMatches.length
-                event.maxNoWoGoalAtHTIteration = maxNoWoGoalAtHTIteration
+                event.maxIteration = maxIteration
+                event.method = method
                 event.nextMatch = {
-                  homeTeam: nonFinishedMatches[0].homeTeam,
-                  awayTeam: nonFinishedMatches[0].awayTeam,
-                  date: nonFinishedMatches[0].date,
-                  dateString: nonFinishedMatches[0].dateString
+                  homeTeam: firstNonFinishedMatch.homeTeam,
+                  awayTeam: firstNonFinishedMatch.awayTeam,
+                  date: firstNonFinishedMatch.date,
+                  dateString: firstNonFinishedMatch.dateString
                 }
-                console.log('===========================')
-                console.log('Country: ' + nonFinishedMatches[0].country)
-                console.log('League: ' + nonFinishedMatches[0].league)
-                console.log('Team: ' + team)
-
-                console.log('Nb finished Matches: ' + finishedMatches.length)
-                console.log('maxNoWoGoalAtHTIteration: ' + maxNoWoGoalAtHTIteration)
-                console.log('next Match: ' + nonFinishedMatches[0].homeTeam + ' VS ' + nonFinishedMatches[0].awayTeam)
-                console.log('next Match date: ' + nonFinishedMatches[0].date)
-                console.log('next Match date string: ' + nonFinishedMatches[0].dateString)
                 return event
-              } else {
+
+              }).catch(err => {
                 return {}
+              })
+
+            } else {
+              return {}
+            }
+          }
+          if (method == 'more_than_1_5_goal') {
+            // more than 1.5 goal
+            let isNoMoreThan1_5GoalList = finishedMatches.map(event => event.fullTimeGoals < 2)
+
+            let maxIteration = 0
+            if (isNoMoreThan1_5GoalList.length > 0) {
+
+              var str = isNoMoreThan1_5GoalList.map(bool => Number(bool)).join('').match(/1+/g);
+
+              if (str !== null) {
+                let proc = Math.max(...(str.map(el => el.length)))
+                maxIteration = proc
               }
-            })
-          } else {
-            return {}
+            }
+
+            maxIteration = maxIteration
+            let mustBet = true
+            i = 0
+            while (i < maxIteration && mustBet) {
+              if (finishedMatches[i].fullTimeGoals > 1) {
+                mustBet = false;
+              }
+              i++;
+            }
+
+            if (finishedMatches.length > 20 && mustBet) {
+              let queryToExtractNextEvent = Event.findOne({
+                $and: [{
+                  status: {
+                    $eq: 'SCH'
+                  }
+                }, {
+                  $or: [{
+                    homeTeam: team
+                  }, {
+                    awayTeam: team
+                  }]
+                }]
+
+              }).sort({
+                date: 'asc'
+              })
+              let promiseQueryToExtractNextEvent = queryToExtractNextEvent.exec()
+              return promiseQueryToExtractNextEvent.then(firstNonFinishedMatch => {
+
+                let event = {}
+                event.country = firstNonFinishedMatch.country
+                event.league = firstNonFinishedMatch.league
+                event.team = team
+                event.nbFinishedMatches = finishedMatches.length
+                event.maxIteration = maxIteration
+                event.method = method
+                event.nextMatch = {
+                  homeTeam: firstNonFinishedMatch.homeTeam,
+                  awayTeam: firstNonFinishedMatch.awayTeam,
+                  date: firstNonFinishedMatch.date,
+                  dateString: firstNonFinishedMatch.dateString
+                }
+                return event
+
+              }).catch(err => {
+                return {}
+              })
+
+            } else {
+              return {}
+            }
+          }
+          if (method == 'two_or_three_goals') {
+            // 2 or 3 goals
+            let isNo2Or3GoalsList = finishedMatches.map(event => !event.twoOrThreeGoals)
+
+            let maxIteration = 0
+            if (isNo2Or3GoalsList.length > 0) {
+
+              var str = isNo2Or3GoalsList.map(bool => Number(bool)).join('').match(/1+/g);
+
+              if (str !== null) {
+                let proc = Math.max(...(str.map(el => el.length)))
+                maxIteration = proc
+              }
+            }
+
+            maxIteration = maxIteration
+            let mustBet = true
+            i = 0
+            while (i < maxIteration && mustBet) {
+              // stop condition => what we are looking for
+              if (finishedMatches[i].twoOrThreeGoals) {
+                mustBet = false;
+              }
+              i++;
+            }
+
+            if (finishedMatches.length > 20 && mustBet) {
+              let queryToExtractNextEvent = Event.findOne({
+                $and: [{
+                  status: {
+                    $eq: 'SCH'
+                  }
+                }, {
+                  $or: [{
+                    homeTeam: team
+                  }, {
+                    awayTeam: team
+                  }]
+                }]
+
+              }).sort({
+                date: 'asc'
+              })
+              let promiseQueryToExtractNextEvent = queryToExtractNextEvent.exec()
+              return promiseQueryToExtractNextEvent.then(firstNonFinishedMatch => {
+
+                let event = {}
+                event.country = firstNonFinishedMatch.country
+                event.league = firstNonFinishedMatch.league
+                event.team = team
+                event.nbFinishedMatches = finishedMatches.length
+                event.maxIteration = maxIteration
+                event.method = method
+                event.nextMatch = {
+                  homeTeam: firstNonFinishedMatch.homeTeam,
+                  awayTeam: firstNonFinishedMatch.awayTeam,
+                  date: firstNonFinishedMatch.date,
+                  dateString: firstNonFinishedMatch.dateString
+                }
+                return event
+
+              }).catch(err => {
+                return {}
+              })
+
+            } else {
+              return {}
+            }
+          }
+          if (method == 'goal_At_Half_Time') {
+            // +0.5 goal at HT
+            let isHTWoGoalList = finishedMatches.map(event => event.halfTime1NoGoal)
+
+            let maxIteration = 0
+            if (isHTWoGoalList.length > 0) {
+
+              var str = isHTWoGoalList.map(bool => Number(bool)).join('').match(/1+/g);
+
+              if (str !== null) {
+                let proc = Math.max(...(str.map(el => el.length)))
+                maxIteration = proc
+              }
+            }
+
+
+            let mustBet = true
+            i = 0
+            while (i < maxIteration && mustBet) {
+              if (!finishedMatches[i].halfTime1NoGoal) {
+                mustBet = false;
+              }
+              i++;
+            }
+
+            if (finishedMatches.length > 20 && mustBet) {
+              let queryToExtractNextEvent = Event.findOne({
+                $and: [{
+                  status: {
+                    $eq: 'SCH'
+                  }
+                }, {
+                  $or: [{
+                    homeTeam: team
+                  }, {
+                    awayTeam: team
+                  }]
+                }]
+
+              }).sort({
+                date: 'asc'
+              })
+              let promiseQueryToExtractNextEvent = queryToExtractNextEvent.exec()
+              return promiseQueryToExtractNextEvent.then(firstNonFinishedMatch => {
+
+                let event = {}
+                event.country = firstNonFinishedMatch.country
+                event.league = firstNonFinishedMatch.league
+                event.team = team
+                event.nbFinishedMatches = finishedMatches.length
+                event.maxIteration = maxIteration
+                event.method = method
+                event.nextMatch = {
+                  homeTeam: firstNonFinishedMatch.homeTeam,
+                  awayTeam: firstNonFinishedMatch.awayTeam,
+                  date: firstNonFinishedMatch.date,
+                  dateString: firstNonFinishedMatch.dateString
+                }
+                return event
+
+              }).catch(err => {
+                return {}
+              })
+
+            } else {
+              return {}
+            }
           }
         })
       })
 
-      Promise.all(promises)
+      Promise.all(promisesToAllTeams)
         .then(function(allNextEventsToBet) {
 
           let allNextFilteredSortedEventsToBet = allNextEventsToBet.filter(value => Object.keys(value).length !== 0).sort(olderFirst);
           res.json(allNextFilteredSortedEventsToBet)
         })
 
-      // return {'titi' : 'tototo'}
-
     })
 
-    // })
   });
 
 
