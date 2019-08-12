@@ -130,13 +130,19 @@ module.exports = function(app) {
 
   app.get('/api/nextEventsToBet', function(req, res) {
 
+
+    // let teams = Event.collection.distinct('homeTeam')
+
     let queryToExtractTeams = Event.find({
       status: {
         $eq: 'SCH'
       }
+    }, {
+      homeTeam: 1
     }).distinct('homeTeam')
     let promiseQueryToExtractTeams = queryToExtractTeams.exec()
     promiseQueryToExtractTeams.then(teams => {
+      // Event.collection.distinct('homeTeam').then(teams => {
 
       let promisesToAllTeams = teams.map(team => {
         let queryToExtractAllFinishedMatches = Event.find({
@@ -152,6 +158,12 @@ module.exports = function(app) {
             }]
           }]
 
+        }, {
+          date: 1,
+          secondHalfBetter: 1,
+          fullTimeGoals: 1,
+          twoOrThreeGoals: 1,
+          halfTime1NoGoal: 1
         }).sort({
           date: 'desc'
         })
@@ -212,6 +224,8 @@ module.exports = function(app) {
                 event.nbFinishedMatches = finishedMatches.length
                 event.maxIteration = maxIteration
                 event.method = method
+                event.round = firstNonFinishedMatch.round
+                event.nbOfRounds = firstNonFinishedMatch.nbOfRounds
                 event.nextMatch = {
                   homeTeam: firstNonFinishedMatch.homeTeam,
                   awayTeam: firstNonFinishedMatch.awayTeam,
@@ -280,6 +294,8 @@ module.exports = function(app) {
                 event.nbFinishedMatches = finishedMatches.length
                 event.maxIteration = maxIteration
                 event.method = method
+                event.round = firstNonFinishedMatch.round
+                event.nbOfRounds = firstNonFinishedMatch.nbOfRounds
                 event.nextMatch = {
                   homeTeam: firstNonFinishedMatch.homeTeam,
                   awayTeam: firstNonFinishedMatch.awayTeam,
@@ -349,6 +365,8 @@ module.exports = function(app) {
                 event.nbFinishedMatches = finishedMatches.length
                 event.maxIteration = maxIteration
                 event.method = method
+                event.round = firstNonFinishedMatch.round
+                event.nbOfRounds = firstNonFinishedMatch.nbOfRounds
                 event.nextMatch = {
                   homeTeam: firstNonFinishedMatch.homeTeam,
                   awayTeam: firstNonFinishedMatch.awayTeam,
@@ -404,6 +422,15 @@ module.exports = function(app) {
                   }]
                 }]
 
+              },{
+                date: 1,
+                dateString: 1,
+                country: 1,
+                league: 1,
+                round: 1,
+                nbOfRounds: 1,
+                homeTeam: 1,
+                awayTeam: 1
               }).sort({
                 date: 'asc'
               })
@@ -417,6 +444,8 @@ module.exports = function(app) {
                 event.nbFinishedMatches = finishedMatches.length
                 event.maxIteration = maxIteration
                 event.method = method
+                event.round = firstNonFinishedMatch.round
+                event.nbOfRounds = firstNonFinishedMatch.nbOfRounds
                 event.nextMatch = {
                   homeTeam: firstNonFinishedMatch.homeTeam,
                   awayTeam: firstNonFinishedMatch.awayTeam,

@@ -25,9 +25,20 @@
 }
 
 .logo-versus {
-  width: 60px;
-  height: 60px;
+  width: 24px;
+  height: 24px;
+  margin-left: 10px;
+
   background-image: url('../images/versus.png');
   background-position: 0 0;
   background-repeat: no-repeat;
+}
+
+.to-bet {
+    width: 24px;
+    background: url(../images/money.png) no-repeat;
+}
+
+.awayTeam {
+  margin-left: 34px;
 }
