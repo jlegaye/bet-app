@@ -128,6 +128,75 @@ module.exports = function(app) {
     })
   })
 
+
+  app.get('/api/nextEvent', function(req, res) {
+    let queryToExtractNextEvent = Event.findOne({
+      $and: [{
+        status: {
+          $eq: 'SCH'
+        }
+      }, {
+        $or: [{
+          homeTeam: req.query.team
+        }, {
+          awayTeam: req.query.team
+        }]
+      }]
+
+    }).sort({
+      date: 'asc'
+    })
+    let promiseQueryToExtractNextEvent = queryToExtractNextEvent.exec()
+    return promiseQueryToExtractNextEvent.then(firstNonFinishedMatch => {
+      res.json(firstNonFinishedMatch)
+    })
+  });
+
+  app.get('/api/finishedMatches', function(req, res) {
+    let queryToExtractTeams = Event.find({
+      $and: [{
+        status: {
+          $eq: 'FIN'
+        }
+      }, {
+        $or: [{
+          homeTeam: req.query.team
+        }, {
+          awayTeam: req.query.team
+        }]
+      }]
+
+    }, {
+      date: 1,
+      secondHalfBetter: 1,
+      fullTimeGoals: 1,
+      twoOrThreeGoals: 1,
+      halfTime1NoGoal: 1
+    }).sort({
+      date: 'desc'
+    })
+    let promiseQueryToExtractTeams = queryToExtractTeams.exec()
+    promiseQueryToExtractTeams.then(teams => {
+      res.json(teams)
+    })
+  });
+
+
+
+  app.get('/api/teams', function(req, res) {
+    let queryToExtractTeams = Event.find({
+      status: {
+        $eq: 'SCH'
+      }
+    }, {
+      homeTeam: 1
+    }).distinct('homeTeam')
+    let promiseQueryToExtractTeams = queryToExtractTeams.exec()
+    promiseQueryToExtractTeams.then(teams => {
+      res.json(teams)
+    })
+  });
+
   app.get('/api/nextEventsToBet', function(req, res) {
 
 
@@ -422,7 +491,7 @@ module.exports = function(app) {
                   }]
                 }]
 
-              },{
+              }, {
                 date: 1,
                 dateString: 1,
                 country: 1,
