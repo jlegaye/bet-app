@@ -327,12 +327,16 @@ angular.module('myApp.view1', ['ngRoute'])
           })
           Promise.all(promisesToAllTeams)
             .then(allNextEventsToBet => {
-              ctrl.isLoading = false
+
               console.log('after promise all')
               let allNextFilteredSortedEventsToBet = allNextEventsToBet.filter(value => Object.keys(value).length !== 0).sort(olderFirst);
 
               console.log(allNextFilteredSortedEventsToBet)
-              ctrl.nextEventsToBet = allNextFilteredSortedEventsToBet
+              $scope.$apply(function() {
+                ctrl.isLoading = false
+                ctrl.nextEventsToBet = allNextFilteredSortedEventsToBet
+              });
+
 
             })
         })
