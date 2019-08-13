@@ -302,7 +302,7 @@ angular.module('myApp.view1', ['ngRoute'])
                       event.league = nextEvent.league
                       event.team = team
                       event.nbFinishedMatches = finishedMatches.length
-                      event.mustBetObj = mustBetObj
+                      event.mustBetObj = mustBetObj.filter(o => o.mustBet)
                       // event.maxIteration = mustBet[1]
                       // event.method = '2nd_Half_better'
                       event.round = nextEvent.round
