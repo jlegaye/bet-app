@@ -50,7 +50,7 @@ const leagues = [{
     league: 'PRIMEIRA LIGA'
   }, {
     country: 'ARGENTINA',
-    league: 'PRIMERA DIVISION'
+    league: 'SUPERLIGA'
   },
   // {
   //  country: 'CHILE',
@@ -96,7 +96,7 @@ const leagues = [{
     league: 'VEIKKAUSLIIGA'
   }, {
     country: 'GREECE',
-    league: 'SUPER LEAGUE'
+    league: 'SUPER LEAGUE 1'
   }, {
     country: 'HUNGARY',
     league: 'NB I'
@@ -106,10 +106,11 @@ const leagues = [{
     seasonOffset: true
   }, {
     country: 'REPUBLIC OF IRELAND',
-    league: 'PREMIER DIVISION'
+    league: 'PREMIER DIVISION',
+    seasonOffset: true
   }, {
     country: 'NORTHERN IRELAND',
-    league: 'SCOTTISH PREMIERSHIP'
+    league: 'NIFL PREMIERSHIP'
   }, {
     country: 'MALTA',
     league: 'PREMIER LEAGUE'
@@ -118,7 +119,8 @@ const leagues = [{
     league: 'LIGA MX'
   }, {
     country: 'NORWAY',
-    league: 'ELITESERIEN'
+    league: 'ELITESERIEN',
+    seasonOffset: true
   }, {
     country: 'WALES',
     league: 'WELSH PREMIER LEAGUE'
@@ -139,7 +141,8 @@ const leagues = [{
     league: 'SUPER LIGA'
   }, {
     country: 'SWEDEN',
-    league: 'ALLSVENSKAN'
+    league: 'ALLSVENSKAN',
+    seasonOffset: true
   }, {
     country: 'SWITZERLAND',
     league: 'SUPER LEAGUE'
