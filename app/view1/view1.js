@@ -122,7 +122,7 @@ angular.module('myApp.view1', ['ngRoute'])
     let moreThan1_5Goal = event => event.fullTimeGoals >= 2
     let goalAtHalfTime = event => !event.halfTime1NoGoal
 
-    ctrl.getNextEventsToBet2ndBetter = function() {
+    ctrl.getNextEventsToBet = function() {
       ctrl.isLoading = true
 
       $http.get('/api/teams')
@@ -175,7 +175,6 @@ angular.module('myApp.view1', ['ngRoute'])
                         homeTeam: nextEvent.homeTeam,
                         awayTeam: nextEvent.awayTeam,
                         date: nextEvent.date,
-                        dateString: nextEvent.dateString
                       }
                       return event
                     })
@@ -212,64 +211,35 @@ angular.module('myApp.view1', ['ngRoute'])
 
     }
     let olderFirst = (a, b) => (a.nextMatch.date > b.nextMatch.date) ? 1 : ((b.nextMatch.date > a.nextMatch.date) ? -1 : 0)
-    ctrl.getNextEventsToBet2ndBetterOld = function() {
-      ctrl.isLoading = true
-      $http.get('/api/nextEventsToBet', {
-          timeout: 1000000,
-          params: {
-            method: '2nd_Half_better'
-          }
-        })
-        .then(function(response) {
-          ctrl.isLoading = false
-          ctrl.nextEventsToBet = response.data
-        })
-        .catch(function(data) {
-          ctrl.isLoading = false
-          console.log('Error: ');
-          console.log(data);
-        });
 
-    }
+    ctrl.radioMethodsFilter = [{
+        label: 'More than 1.5 goal',
+        value: 'moreThan1_5Goal'
+      },
+      {
+        label: 'Second half better',
+        value: 'secondHalfBetter'
+      },
+      {
+        label: 'Goal at halftime',
+        value: 'goalAtHalfTime'
+      },
+      {
+        label: 'Two or three goals',
+        value: 'twoOrThreeGoals'
+      }
+    ];
 
-    ctrl.getNextEventsToBetMore1_5Goal = function() {
-      ctrl.isLoading = true
-      $http.get('/api/nextEventsToBet', {
-          timeout: 1000000,
-          params: {
-            method: 'more_than_1_5_goal'
-          }
-        })
-        .then(function(response) {
-          ctrl.isLoading = false
-          ctrl.nextEventsToBet = response.data
-        })
-        .catch(function(data) {
-          ctrl.isLoading = false
-          console.log('Error: ');
-          console.log(data);
-        });
+    ctrl.selectedMethodsFilter = 'moreThan1_5Goal'
 
-    }
 
-    ctrl.getNextEventsToBet2Or3Goals = function() {
-      ctrl.isLoading = true
-      $http.get('/api/nextEventsToBet', {
-          timeout: 1000000,
-          params: {
-            method: 'two_or_three_goals'
-          }
-        })
-        .then(function(response) {
-          ctrl.isLoading = false
-          ctrl.nextEventsToBet = response.data
-        })
-        .catch(function(data) {
-          ctrl.isLoading = false
-          console.log('Error: ');
-          console.log(data);
-        });
-
+    ctrl.methodsToFilter = []
+    ctrl.methodsFilter = function(event) {
+      if (event.mustBetObj.filter(met => met.mustBet).map(met => met.methodName).includes(ctrl.selectedMethodsFilter)) {
+        return event
+      } else {
+        return
+      }
     }
 
 

@@ -57,9 +57,6 @@ const leagues = [{
   //  league: 'PRIMERA DIVISION'
   //},
   {
-    country: 'COLOMBIA',
-    league: 'PRIMERA A'
-  }, {
     country: 'RUSSIA',
     league: 'RUSSIAN FOOTBALL PREMIER LEAGUE'
   }, {
@@ -70,8 +67,18 @@ const leagues = [{
     country: 'ALGERIA',
     league: 'LIGUE 1'
   }, {
+    country: 'ARMENIA',
+    league: 'PREMIER LEAGUE'
+  }, {
     country: 'AUSTRIA',
     league: 'BUNDESLIGA'
+  }, {
+    country: 'AZERBAIJAN',
+    league: 'PREMIER LEAGUE'
+  }, {
+    country: 'BELARUS',
+    league: 'PREMIER LEAGUE',
+    seasonOffset: true
   }, {
     country: 'BRAZIL',
     league: 'SERIE A',
@@ -79,6 +86,9 @@ const leagues = [{
   }, {
     country: 'BULGARIA',
     league: 'FIRST PROFESSIONAL FOOTBALL LEAGUE'
+  }, {
+    country: 'COLOMBIA',
+    league: 'PRIMERA A'
   }, {
     country: 'CYPRUS',
     league: 'DIVISION 1'
@@ -88,6 +98,11 @@ const leagues = [{
   }, {
     country: 'DENMARK',
     league: 'SUPERLIGAEN'
+  },
+  {
+    country: 'ESTONIA',
+    league: 'MEISTRILIIGA',
+    seasonOffset: true
   }, {
     country: 'SCOTLAND',
     league: 'SCOTTISH PREMIERSHIP'
@@ -106,6 +121,10 @@ const leagues = [{
     league: 'J1 LEAGUE',
     seasonOffset: true
   }, {
+    country: 'KAZAKHSTAN',
+    league: 'PREMIER LEAGUE',
+    seasonOffset: true
+  }, {
     country: 'REPUBLIC OF IRELAND',
     league: 'PREMIER DIVISION',
     seasonOffset: true
@@ -118,6 +137,9 @@ const leagues = [{
   }, {
     country: 'MEXICO',
     league: 'LIGA MX'
+  }, {
+    country: 'MONTENEGRO',
+    league: 'PRVA CFL'
   }, {
     country: 'NORWAY',
     league: 'ELITESERIEN',
@@ -137,6 +159,9 @@ const leagues = [{
   }, {
     country: 'ROMANIA',
     league: 'LIGA I'
+  }, {
+    country: 'SERBIA',
+    league: 'SUPERLIGA'
   }, {
     country: 'SLOVAKIA',
     league: 'SUPER LIGA'

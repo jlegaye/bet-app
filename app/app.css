@@ -34,11 +34,36 @@
   background-repeat: no-repeat;
 }
 
+.to-bet:before{
+    content: '';
+    background:url('../images/money.png');
+    background-size:cover;
+        position:absolute;
+    width:24px;
+    height:24px;
+    margin-left:-34px;
+}
+
+/*
 .to-bet {
     width: 24px;
     background: url(../images/money.png) no-repeat;
-}
+}*/
 
+.homeTeam {
+  margin-left: 0px;
+}
 .awayTeam {
   margin-left: 34px;
+}
+
+.event {
+  margin-bottom: 50px;
+}
+
+.to-bet.homeTeam {
+  margin-left: 34px;
+}
+.to-bet.awayTeam {
+  margin-left: 68px;
 }
