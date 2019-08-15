@@ -274,8 +274,8 @@ async function extractEventsResultsFromLeagueUrl(browser, leagueResultsUrl) {
       let eventsWithDate = []
       let currentDate = ''
       let currentRound = ''
-      console.log('events !!!!')
-      console.log(events)
+      // console.log('events !!!!')
+      // console.log(events)
       for (var ev of events) {
         if (ev.round) {
           currentRound = parseInt(ev.round.substring(6))
@@ -292,7 +292,7 @@ async function extractEventsResultsFromLeagueUrl(browser, leagueResultsUrl) {
           ev.date = utcIsoDate
           ev.round = currentRound
           delete ev.hour
-          ev['_id'] = utcIsoDate + '_' + ev.homeTeam.replace(/ /g, '_') + '_' + ev.awayTeam.replace(/ /g, '_')
+          ev['_id'] = ev.homeTeam.replace(/ /g, '_') + '__' + ev.awayTeam.replace(/ /g, '_') + '___' + ev.country.replace(/ /g, '_') + '__' + ev.league.replace(/ /g, '_') + '__' + ev.season.replace(/ /g, '_')
           eventsWithDate.push(ev)
         }
       }
