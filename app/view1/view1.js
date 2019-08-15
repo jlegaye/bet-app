@@ -17,7 +17,8 @@ angular.module('myApp.view1', ['ngRoute'])
       });
     }
 
-    const allLeagues = [{
+    const allLeagues = [
+      {
         country: 'FRANCE',
         league: 'LIGUE 1'
       }, {
@@ -155,6 +156,8 @@ angular.module('myApp.view1', ['ngRoute'])
     ]
 
     var ctrl = $scope;
+
+    ctrl.testDate = moment('2019-08-17T19:00:00.000Z').locale('fr').format('LLLL')
 
     ctrl.nextEventsToBet = []
     ctrl.isLoading = false

@@ -1,9 +1,8 @@
 const puppeteer = require('puppeteer')
 const util = require('util')
 const fs = require('fs')
-const moment = require('moment');
-const moment_timezone = require('moment-timezone');
-let zone = moment_timezone.tz.guess();
+// const moment = require('moment')
+// const moment_timezone = require('moment-timezone')
 
 let nbOfSeasons = 10
 const launchOptions = {
@@ -287,11 +286,13 @@ async function extractEventsResultsFromLeagueUrl(browser, leagueResultsUrl) {
         } else {
           let builtDate = currentDate + 'T' + ev.hour + ':00'
 
-          let trueDate = moment.tz(builtDate, zone)
-          ev.date = trueDate.utc().format()
+          // let zone = moment_timezone.tz.guess();
+          // let trueDate = getDate(builtDate)
+          let utcIsoDate = new Date(new Date(builtDate).getTime()).toISOString()
+          ev.date = utcIsoDate
           ev.round = currentRound
           delete ev.hour
-          ev['_id'] = nextEventDateGetTime + '_' + ev.homeTeam.replace(/ /g, '_') + '_' + ev.awayTeam.replace(/ /g, '_')
+          ev['_id'] = utcIsoDate + '_' + ev.homeTeam.replace(/ /g, '_') + '_' + ev.awayTeam.replace(/ /g, '_')
           eventsWithDate.push(ev)
         }
       }
