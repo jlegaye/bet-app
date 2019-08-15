@@ -35,25 +35,24 @@ module.exports = function(app) {
     season: String,
     round: Number,
     nbOfRounds: Number,
-    dateString: String,
-    date: Number,
+    date: Date,
     status: String,
     homeTeam: String,
     awayTeam: String,
-    htScore: String,
-    homeHt1Score: Number,
-    awayHt1Score: Number,
+    halfTime1Score: String,
+    halfTime1HomeScore: Number,
+    halfTime1AwayScore: Number,
     halfTime1Goals: Number,
     halfTime1Draw: Boolean,
     halfTime1NoGoal: Boolean,
-    homeHt2Score: Number,
-    awayHt2Score: Number,
+    halfTime2HomeScore: Number,
+    halfTime2AwayScore: Number,
     halfTime2Goals: Number,
     halfTime2Draw: Boolean,
     halfTime2NoGoal: Boolean,
-    ftScore: String,
-    homeFtScore: Number,
-    awayFtScore: Number,
+    fullTimeScore: String,
+    fullTimeHomeScore: Number,
+    fullTimeAwayScore: Number,
     fullTimeGoals: Number,
     fullTimeDraw: Boolean,
     fullTimeNoGoal: Boolean,
@@ -299,7 +298,6 @@ module.exports = function(app) {
                   homeTeam: firstNonFinishedMatch.homeTeam,
                   awayTeam: firstNonFinishedMatch.awayTeam,
                   date: firstNonFinishedMatch.date,
-                  dateString: firstNonFinishedMatch.dateString
                 }
                 return event
 
@@ -369,7 +367,6 @@ module.exports = function(app) {
                   homeTeam: firstNonFinishedMatch.homeTeam,
                   awayTeam: firstNonFinishedMatch.awayTeam,
                   date: firstNonFinishedMatch.date,
-                  dateString: firstNonFinishedMatch.dateString
                 }
                 return event
 
@@ -440,7 +437,6 @@ module.exports = function(app) {
                   homeTeam: firstNonFinishedMatch.homeTeam,
                   awayTeam: firstNonFinishedMatch.awayTeam,
                   date: firstNonFinishedMatch.date,
-                  dateString: firstNonFinishedMatch.dateString
                 }
                 return event
 
@@ -493,7 +489,6 @@ module.exports = function(app) {
 
               }, {
                 date: 1,
-                dateString: 1,
                 country: 1,
                 league: 1,
                 round: 1,
@@ -519,7 +514,6 @@ module.exports = function(app) {
                   homeTeam: firstNonFinishedMatch.homeTeam,
                   awayTeam: firstNonFinishedMatch.awayTeam,
                   date: firstNonFinishedMatch.date,
-                  dateString: firstNonFinishedMatch.dateString
                 }
                 return event
 

@@ -1,6 +1,9 @@
 const puppeteer = require('puppeteer')
 const util = require('util')
 const fs = require('fs')
+const moment = require('moment');
+const moment_timezone = require('moment-timezone');
+let zone = moment_timezone.tz.guess();
 
 let nbOfSeasons = 10
 const launchOptions = {
@@ -207,45 +210,45 @@ async function extractEventsResultsFromLeagueUrl(browser, leagueResultsUrl) {
           event.awayTeam = awayTeam
 
           if (isFinished) {
-            let htScore = scoreRow.querySelector('.score_ht').innerText.trim()
-            event.htScore = htScore
+            let halfTime1Score = scoreRow.querySelector('.score_ht').innerText.trim()
+            event.halfTime1Score = halfTime1Score
 
 
-            let scoreRegex = htScore.match(/\d+/ig);
+            let scoreRegex = halfTime1Score.match(/\d+/ig);
             if (scoreRegex) {
-              let homeHt1Score = scoreRegex[0]
-              let awayHt1Score = scoreRegex[1]
-              let homeHt1ScoreInt = parseInt(homeHt1Score)
-              let awayHt1ScoreInt = parseInt(awayHt1Score)
-              event.homeHt1Score = homeHt1ScoreInt
-              event.awayHt1Score = awayHt1ScoreInt
+              let halfTime1HomeScore = scoreRegex[0]
+              let halfTime1AwayScore = scoreRegex[1]
+              let homeHt1ScoreInt = parseInt(halfTime1HomeScore)
+              let awayHt1ScoreInt = parseInt(halfTime1AwayScore)
+              event.halfTime1HomeScore = homeHt1ScoreInt
+              event.halfTime1AwayScore = awayHt1ScoreInt
               let halfTime1Goals = homeHt1ScoreInt + awayHt1ScoreInt
               event.halfTime1Goals = halfTime1Goals
               event.halfTime1Draw = homeHt1ScoreInt == awayHt1ScoreInt
               event.halfTime1NoGoal = halfTime1Goals == 0
             }
 
-            let ftScore = scoreRow.querySelector('.score_score').innerText.trim()
-            event.ftScore = ftScore
+            let fullTimeScore = scoreRow.querySelector('.score_score').innerText.trim()
+            event.fullTimeScore = fullTimeScore
 
 
-            let ftScoreRegex = ftScore.match(/\d+/ig);
+            let ftScoreRegex = fullTimeScore.match(/\d+/ig);
             if (ftScoreRegex) {
-              let homeFtScore = ftScoreRegex[0]
-              let awayFtScore = ftScoreRegex[1]
-              let homeFtScoreInt = parseInt(homeFtScore)
-              let awayFtScoreInt = parseInt(awayFtScore)
-              event.homeFtScore = homeFtScoreInt
-              event.awayFtScore = awayFtScoreInt
+              let fullTimeHomeScore = ftScoreRegex[0]
+              let fullTimeAwayScore = ftScoreRegex[1]
+              let homeFtScoreInt = parseInt(fullTimeHomeScore)
+              let awayFtScoreInt = parseInt(fullTimeAwayScore)
+              event.fullTimeHomeScore = homeFtScoreInt
+              event.fullTimeAwayScore = awayFtScoreInt
               let fullTimeGoals = homeFtScoreInt + awayFtScoreInt
               event.fullTimeGoals = fullTimeGoals
               event.fullTimeDraw = homeFtScoreInt == awayFtScoreInt
               event.fullTimeNoGoal = fullTimeGoals == 0
 
-              let homeHt2ScoreInt = homeFtScoreInt - event.homeHt1Score
-              let awayHt2ScoreInt = awayFtScoreInt - event.awayHt1Score
-              event.homeHt2Score = homeHt2ScoreInt
-              event.awayHt2Score = awayHt2ScoreInt
+              let homeHt2ScoreInt = homeFtScoreInt - event.halfTime1HomeScore
+              let awayHt2ScoreInt = awayFtScoreInt - event.halfTime1AwayScore
+              event.halfTime2HomeScore = homeHt2ScoreInt
+              event.halfTime2AwayScore = awayHt2ScoreInt
               let halfTime2Goals = homeHt2ScoreInt + awayHt2ScoreInt
               event.halfTime2Goals = halfTime2Goals
               event.halfTime2Draw = homeHt2ScoreInt == awayHt2ScoreInt
@@ -283,18 +286,9 @@ async function extractEventsResultsFromLeagueUrl(browser, leagueResultsUrl) {
           currentDate = eventDateSplitted[2] + '-' + eventDateSplitted[1] + '-' + eventDateSplitted[0]
         } else {
           let builtDate = currentDate + 'T' + ev.hour + ':00'
-          let nextEventDate = new Date(builtDate)
-          let nextEventDateGetTime = nextEventDate.getTime()
-          let nextEventDateToString = nextEventDate.toLocaleDateString('en-us', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric'
-          })
-          ev.dateString = nextEventDateToString
-          ev.date = nextEventDateGetTime
+
+          let trueDate = moment.tz(builtDate, zone)
+          ev.date = trueDate.utc().format()
           ev.round = currentRound
           delete ev.hour
           ev['_id'] = nextEventDateGetTime + '_' + ev.homeTeam.replace(/ /g, '_') + '_' + ev.awayTeam.replace(/ /g, '_')
@@ -377,63 +371,6 @@ let getTeamUrls = () => {
     }
   }
   return data;
-}
-
-
-function resolveAllSoccerLeagues(browser, country, league) {
-  return new Promise(resolve => {
-
-    let allTeamsUrls = []
-    let allResults = []
-
-    leagues.filter(item => item.country == country && item.league == league).reduce((promise, nextLeague) => {
-      return promise
-        .then((result) => {
-          return getSoccerTeamUrls(browser, nextLeague.country, nextLeague.league, nextLeague.seasonOffset).then(teamUrls => {
-            allTeamsUrls.push(teamUrls)
-
-          });
-        })
-        .catch(console.error);
-    }, Promise.resolve()).then(r => {
-      // console.log(util.inspect(allTeamsUrls, false, null, false))
-      let flattenAllTeamsUrls = [].concat.apply([], allTeamsUrls)
-
-      flattenAllTeamsUrls.reduce((promise, nextTeamWithUrls) => {
-        return promise
-          .then((result) => {
-            return resolveTeamAndUrls(browser, nextTeamWithUrls).then(teamUrls => {
-              allResults.push(teamUrls)
-
-            });
-          })
-          .catch(console.error);
-      }, Promise.resolve()).then(r => {
-        let flattenAllTeamsResolutions = [].concat.apply([], allResults)
-
-        // let filteredAllTeamsResolutions = flattenAllTeamsResolutions.filter(team => team.nextEvent != undefined && team.mustBet && team.maxNoDrawAtHTIteration < 10 && team.nbEvents > 20)
-        let filteredAllTeamsResolutions = flattenAllTeamsResolutions.filter(team => team.nextEvent != undefined && team.mustBetGoalAtHT && team.nbEvents > 20)
-
-        let sorted = filteredAllTeamsResolutions.sort(olderFirst)
-        let map = sorted.map(teamEvents => {
-          return {
-            name: teamEvents.name,
-            country: teamEvents.country,
-            league: teamEvents.league,
-            nextEvent: teamEvents.nextEvent.nextEventHome + ' VS ' + teamEvents.nextEvent.nextEventAway,
-            nextEventDate: teamEvents.nextEvent.nextEventDateString,
-            // mustBetDrawAtHT : teamEvents.mustBetDrawAtHT,
-            // maxNoDrawAtHTIteration: teamEvents.maxNoDrawAtHTIteration,
-            mustBetGoalAtHT: teamEvents.mustBetGoalAtHT,
-            maxNoGoalAtHTIteration: teamEvents.maxNoGoalAtHTIteration,
-            nbEvents: teamEvents.nbEvents
-          }
-        })
-
-        resolve(map)
-      })
-    })
-  })
 }
 
 function getAllSoccerEvents(browser) {

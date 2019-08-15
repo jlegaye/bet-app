@@ -178,16 +178,16 @@ async function resolveTeamUrl(browser, teamUrl) {
         // console.log(eventNotDone)
         // console.log(element.querySelector('.score_ht').innerText.trim())
         if (isFinished) {
-          let htScore = element.querySelector('.score_ht').innerText.trim()
-          event.htScore = htScore
+          let halfTime1Score = element.querySelector('.score_ht').innerText.trim()
+          event.halfTime1Score = halfTime1Score
 
 
-          let scoreRegex = htScore.match(/\d+/ig);
+          let scoreRegex = halfTime1Score.match(/\d+/ig);
           if (scoreRegex) {
-            let homeHt1Score = scoreRegex[0]
-            let awayHt1Score = scoreRegex[1]
-            event.halfTime1Draw = homeHt1Score == awayHt1Score
-            event.halfTime1NoGoal = homeHt1Score == 0 && awayHt1Score == 0
+            let halfTime1HomeScore = scoreRegex[0]
+            let halfTime1AwayScore = scoreRegex[1]
+            event.halfTime1Draw = halfTime1HomeScore == halfTime1AwayScore
+            event.halfTime1NoGoal = halfTime1HomeScore == 0 && halfTime1AwayScore == 0
           }
           events.push(event)
         } else if (eventNotDone && notPost && !nextEventFound) {
