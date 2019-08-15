@@ -486,20 +486,20 @@ async function getAllLastSeasonEvents() {
   return result
 }
 
-getAllEventsByCountryAndLeague('NORTHERN IRELAND', 'NIFL PREMIERSHIP').then((res) => {
-  // stringify JSON Object
-  var jsonContent = JSON.stringify(res);
-
-  fs.writeFile("output_NORTHERN_IRELAND.json", jsonContent, 'utf8', function(err) {
-    if (err) {
-      console.log("An error occured while writing JSON Object to File.");
-      return console.log(err);
-    }
-
-    console.log("JSON file has been saved.");
-  });
-  console.log(util.inspect(res, false, null, false))
-});
+// getAllEventsByCountryAndLeague('NORTHERN IRELAND', 'NIFL PREMIERSHIP').then((res) => {
+//   // stringify JSON Object
+//   var jsonContent = JSON.stringify(res);
+//
+//   fs.writeFile("output_NORTHERN_IRELAND.json", jsonContent, 'utf8', function(err) {
+//     if (err) {
+//       console.log("An error occured while writing JSON Object to File.");
+//       return console.log(err);
+//     }
+//
+//     console.log("JSON file has been saved.");
+//   });
+//   console.log(util.inspect(res, false, null, false))
+// });
 
 module.exports = {
   getAllLastSeasonEvents,
