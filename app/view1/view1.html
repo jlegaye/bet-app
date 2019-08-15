@@ -38,34 +38,76 @@
 
 </section>
 <div>
-
-  <md-radio-group ng-model="selectedMethodsFilter" class="md-primary">
-
-    <md-radio-button ng-repeat="d in radioMethodsFilter" ng-value="d.value" ng-class="{'md-align-top-left': $index==1}">
-      {{ d.label }}<br />
-
-
-    </md-radio-button>
-
-  </md-radio-group>
+  <span>Methods filters: </span>
+  <md-checkbox ng-model="moreThan1_5GoalFilter">
+    More than 1.5 goal<br />
+  </md-checkbox>
+  <md-checkbox ng-model="secondHalfBetterFilter">
+    Second half better<br />
+  </md-checkbox>
+  <md-checkbox ng-model="goalAtHalfTimeFilter">
+    Goal at halftime<br />
+  </md-checkbox>
+  <md-checkbox ng-model="twoOrThreeGoalsFilter">
+    Two or three goals<br />
+  </md-checkbox>
 </div>
 
+<div>
+  <span>Group by: </span>
+  <md-checkbox ng-model="dateGroupBy" ng-change="updateCountryGroupByCheckBoxes()">
+    Date<br />
+  </md-checkbox>
+  <md-checkbox ng-model="countryLeagueGroupBy" ng-change="updateDateGroupByCheckBoxes()">
+    Country & league<br />
+  </md-checkbox>
+
+</div>
 <h1>Results found: {{(nextEventsToBet | filter:methodsFilter).length}}</h1>
 <div ng-show="!isLoading">
   <md-list class="md-dense" flex>
-    <!-- <md-subheader class="md-no-sticky">3 line item (dense)</md-subheader> -->
-    <md-list-item class="md-3-line event" ng-repeat="eventToBet in nextEventsToBet | filter:methodsFilter">
+    <md-list-item class="md-3-line event" ng-repeat="eventToBet in nextEventsToBet | filter:methodsFilter" ng-if="!countryLeagueGroupBy && !dateGroupBy">
       <div class="md-list-item-text" layout="column">
         <h2>{{eventToBet.country}} ({{eventToBet.league}}<span ng-if="eventToBet.round != null"> : {{eventToBet.round}}/{{eventToBet.nbOfRounds}}</span>)</h2>
         <h2>{{eventToBet.nextMatch.date | date :  "EEEE, MMMM d, y HH:mm" }}</h2>
         <h2><span ng-class="{'to-bet': eventToBet.nextMatch.homeTeam == eventToBet.team}" class="homTeam">{{eventToBet.nextMatch.homeTeam}}</span> <span class="logo-versus"><span> <span ng-class="{'to-bet': eventToBet.nextMatch.awayTeam == eventToBet.team}"
                 class="awayTeam">{{eventToBet.nextMatch.awayTeam}}</span></h2>
         <h3 ng-repeat="method in eventToBet.mustBetObj">
-          <span>{{method.methodName}} (Iterations: {{method.iteration}})</span>
+          <span>{{method.methodName}} </span><span style="color:blue">{{method.iteration}}</span>
         </h3>
-        <!-- <h3>Method: {{eventToBet.method}}</h3>
-        <h3>Iteration: <span style="color:blue">{{eventToBet.maxIteration}}</span></h3> -->
         <h3>Number of matches calculated: <span style="color:blue">{{eventToBet.nbFinishedMatches}}</span></h3>
+      </div>
+    </md-list-item>
+
+    <md-list-item class="md-3-line event" ng-repeat="(key, value) in nextEventsToBet | filter:methodsFilter | map:toCountryAndLeague | groupBy:'countryAndLeague'" ng-if="countryLeagueGroupBy">
+      <div class="md-list-item-text" layout="column">
+        <h1>{{key}}</h1>
+        <div ng-repeat="eventToBet in value">
+          <h2 ng-if="eventToBet.round != null">Round: {{eventToBet.round}}/{{eventToBet.nbOfRounds}}</h2>
+          <h2>{{eventToBet.nextMatch.date | date :  "EEEE, MMMM d, y HH:mm" }}</h2>
+          <h2><span ng-class="{'to-bet': eventToBet.nextMatch.homeTeam == eventToBet.team}" class="homTeam">{{eventToBet.nextMatch.homeTeam}}</span> <span class="logo-versus"><span> <span ng-class="{'to-bet': eventToBet.nextMatch.awayTeam == eventToBet.team}"
+                  class="awayTeam">{{eventToBet.nextMatch.awayTeam}}</span></h2>
+          <h3 ng-repeat="method in eventToBet.mustBetObj">
+            <span>{{method.methodName}} </span><span style="color:blue">{{method.iteration}}</span>
+          </h3>
+          <h3>Number of matches calculated: <span style="color:blue">{{eventToBet.nbFinishedMatches}}</span></h3>
+        </div>
+      </div>
+    </md-list-item>
+
+    <md-list-item class="md-3-line event" ng-repeat="(key, value) in nextEventsToBet | filter:methodsFilter | map:toDay | groupBy:'nextMatch.day'" ng-if="dateGroupBy">
+      <div class="md-list-item-text" layout="column">
+        <h1>{{key}}</h1>
+        <div ng-repeat="eventToBet in value">
+          <h2>{{eventToBet.country}} ({{eventToBet.league}}<span ng-if="eventToBet.round != null"> : {{eventToBet.round}}/{{eventToBet.nbOfRounds}}</span>)</h2>
+          <h2>{{eventToBet.nextMatch.date | date :  "HH:mm" }}</h2>
+          <h2><span ng-class="{'to-bet': eventToBet.nextMatch.homeTeam == eventToBet.team}" class="homTeam">{{eventToBet.nextMatch.homeTeam}}</span> <span class="logo-versus"><span> <span ng-class="{'to-bet': eventToBet.nextMatch.awayTeam == eventToBet.team}"
+                  class="awayTeam">{{eventToBet.nextMatch.awayTeam}}</span></h2>
+          <h3 ng-repeat="method in eventToBet.mustBetObj">
+            <span>{{method.methodName}} </span><span style="color:blue">{{method.iteration}}</span>
+          </h3>
+          <h3>Number of matches calculated: <span style="color:blue">{{eventToBet.nbFinishedMatches}}</span></h3>
+        </div>
       </div>
     </md-list-item>
   </md-list>

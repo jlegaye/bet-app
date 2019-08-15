@@ -212,34 +212,54 @@ angular.module('myApp.view1', ['ngRoute'])
     }
     let olderFirst = (a, b) => (a.nextMatch.date > b.nextMatch.date) ? 1 : ((b.nextMatch.date > a.nextMatch.date) ? -1 : 0)
 
-    ctrl.radioMethodsFilter = [{
-        label: 'More than 1.5 goal',
-        value: 'moreThan1_5Goal'
-      },
-      {
-        label: 'Second half better',
-        value: 'secondHalfBetter'
-      },
-      {
-        label: 'Goal at halftime',
-        value: 'goalAtHalfTime'
-      },
-      {
-        label: 'Two or three goals',
-        value: 'twoOrThreeGoals'
-      }
-    ];
+    ctrl.moreThan1_5GoalFilter = true
+    ctrl.secondHalfBetterFilter = true
+    ctrl.goalAtHalfTimeFilter = true
+    ctrl.twoOrThreeGoalsFilter = true
 
-    ctrl.selectedMethodsFilter = 'moreThan1_5Goal'
-
+    ctrl.dateGroupBy = false
+    ctrl.leagueGroupBy = false
 
     ctrl.methodsToFilter = []
     ctrl.methodsFilter = function(event) {
-      if (event.mustBetObj.filter(met => met.mustBet).map(met => met.methodName).includes(ctrl.selectedMethodsFilter)) {
+      let methodList = event.mustBetObj.filter(met => met.mustBet).map(met => met.methodName)
+      let moreThan1_5GoalTest = ctrl.moreThan1_5GoalFilter && methodList.includes('moreThan1_5Goal')
+      let secondHalfBetterTest = ctrl.secondHalfBetterFilter && methodList.includes('secondHalfBetter')
+      let goalAtHalfTimeFilterTest = ctrl.goalAtHalfTimeFilter && methodList.includes('goalAtHalfTime')
+      let twoOrThreeGoalsTest = ctrl.twoOrThreeGoalsFilter && methodList.includes('twoOrThreeGoals')
+      if (moreThan1_5GoalTest || secondHalfBetterTest || goalAtHalfTimeFilterTest || twoOrThreeGoalsTest) {
         return event
       } else {
         return
       }
+    }
+
+    ctrl.updateDateGroupByCheckBoxes = function() {
+      if (ctrl.countryLeagueGroupBy) {
+        ctrl.dateGroupBy = false
+      }
+    }
+
+    ctrl.updateCountryGroupByCheckBoxes = function() {
+      if(ctrl.dateGroupBy) {
+        ctrl.countryLeagueGroupBy = false
+      }
+    }
+
+    ctrl.toCountryAndLeague = function(event) {
+      event.countryAndLeague = event.country + ' (' + event.league + ')'
+      return event
+    }
+
+    ctrl.toDay = function(event) {
+      let options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      };
+      event.nextMatch.day = new Date(event.nextMatch.date).toLocaleDateString('en', options)
+      return event
     }
 
 
