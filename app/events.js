@@ -318,7 +318,7 @@ async function extractEventsResultsFromLeagueUrl(browser, leagueResultsUrl) {
           // let zone = moment_timezone.tz.guess();
           // let trueDate = getDate(builtDate)
           let d = new Date(builtDate);
-          d.setTime(d.getTime() + (d.getTimezoneOffset() + 60) * 60 * 1000);
+          d.setTime(d.getTime() + (d.getTimezoneOffset() - 3 * 60) * 60 * 1000);
           ev.date = d.toISOString()
           ev.round = currentRound
           delete ev.hour
@@ -507,7 +507,7 @@ async function getAllEvents() {
 }
 
 async function getAllLastSeasonEvents() {
-  console.log('getAllEvents')
+  console.log('getAllLastSeasonEvents')
   nbOfSeasons = 1
   const browser = await puppeteer.launch(launchOptions);
   var result = await getAllSoccerEvents(browser);
