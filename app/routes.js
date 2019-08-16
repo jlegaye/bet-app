@@ -33,7 +33,7 @@ module.exports = function(app) {
     country: String,
     league: String,
     season: String,
-    round: Number,
+    round: String,
     nbOfRounds: Number,
     date: Date,
     status: String,
@@ -72,6 +72,30 @@ module.exports = function(app) {
   // compile schema to model
   var Event = mongoose.model('Event', EventSchema, 'events');
 
+  app.get('/api/refreshLeagueDatabase', function(req, res) {
+
+      events.getAllEventsByCountryAndLeague(req.query.country, req.query.league)
+      .then((result) => {
+        // save multiple documents to the collection referenced by Book Model
+        for (var event of result) {
+          Event.findByIdAndUpdate(event['_id'], event, {
+            upsert: true
+          }, function(err, docs) {
+            if (err) {
+              return console.error(err);
+            } else {
+              // console.log("Document inserted to Collection");
+            }
+          });
+        }
+
+      })
+      .catch((err) => console.log(err))
+    res.json({
+      'ok': 'ok'
+    })
+  })
+
   app.get('/api/refreshDatabase', function(req, res) {
 
     events.getAllLastSeasonEvents()
@@ -86,7 +110,7 @@ module.exports = function(app) {
             if (err) {
               return console.error(err);
             } else {
-              console.log("Document inserted to Collection");
+              // console.log("Document inserted to Collection");
             }
           });
         }
@@ -96,6 +120,10 @@ module.exports = function(app) {
     res.json({
       'ok': 'ok'
     })
+  })
+
+  app.get('/api/leagues', function(req, res) {
+    res.json(events.leagues)
   })
 
   app.get('/api/refreshAllDatabase', function(req, res) {
@@ -113,7 +141,7 @@ module.exports = function(app) {
               if (err) {
                 return console.error(err);
               } else {
-                console.log("Document inserted to Collection");
+                // console.log("Document inserted to Collection");
               }
             });
 
@@ -179,8 +207,6 @@ module.exports = function(app) {
       res.json(teams)
     })
   });
-
-
 
   app.get('/api/teams', function(req, res) {
     let queryToExtractTeams = Event.find({
@@ -537,29 +563,7 @@ module.exports = function(app) {
 
     })
 
-  });
-
-
-
-
-
-  app.post("/event", async (request, response) => {
-    try {
-      var event = new EventModel(request.body);
-      var result = await event.save();
-      response.send(result);
-    } catch (error) {
-      response.status(500).send(error);
-    }
-  });
-  app.get("/events", async (request, response) => {
-    try {
-      var result = await EventModel.find().exec();
-      response.send(result);
-    } catch (error) {
-      response.status(500).send(error);
-    }
-  });
+  })
 
 
   // api ---------------------------------------------------------------------

@@ -307,7 +307,7 @@ async function extractEventsResultsFromLeagueUrl(browser, leagueResultsUrl) {
       // console.log(events)
       for (var ev of events) {
         if (ev.round) {
-          currentRound = parseInt(ev.round.substring(6))
+          currentRound = ev.round.substring(6)
         } else if (ev.date) {
           let eventDateStr = ev.date
           let eventDateSplitted = eventDateStr.split('-')
@@ -317,16 +317,20 @@ async function extractEventsResultsFromLeagueUrl(browser, leagueResultsUrl) {
 
           // let zone = moment_timezone.tz.guess();
           // let trueDate = getDate(builtDate)
-          let utcIsoDate = new Date(new Date(builtDate).getTime()).toISOString()
-          ev.date = utcIsoDate
+          let d = new Date(builtDate);
+          d.setTime(d.getTime() + (d.getTimezoneOffset() + 60) * 60 * 1000);
+          ev.date = d.toISOString()
           ev.round = currentRound
           delete ev.hour
-          ev['_id'] = ev.homeTeam.replace(/ /g, '_') + '__' + ev.awayTeam.replace(/ /g, '_') + '___' + ev.country.replace(/ /g, '_') + '__' + ev.league.replace(/ /g, '_') + '__' + ev.season.replace(/ /g, '_')
+          let roundStr = isNaN(ev.round) ? ev.round.replace(/ /g, '_') : ev.round
+          ev['_id'] = ev.homeTeam.replace(/ /g, '_') + '__' + ev.awayTeam.replace(/ /g, '_') + '___' + ev.country.replace(/ /g, '_') + '__' + ev.league.replace(/ /g, '_') + '__' + roundStr + '__' + ev.season.replace(/ /g, '_')
           eventsWithDate.push(ev)
         }
       }
       for (var ev of events) {
-        ev.nbOfRounds = currentRound
+        if (!isNaN(currentRound)) {
+          ev.nbOfRounds = currentRound
+        }
       }
 
       data = eventsWithDate
@@ -511,7 +515,7 @@ async function getAllLastSeasonEvents() {
   return result
 }
 
-// getAllEventsByCountryAndLeague('NORTHERN IRELAND', 'NIFL PREMIERSHIP').then((res) => {
+// getAllEventsByCountryAndLeague('FRANCE', 'LIGUE 1').then((res) => {
 //   // stringify JSON Object
 //   var jsonContent = JSON.stringify(res);
 //
@@ -529,5 +533,6 @@ async function getAllLastSeasonEvents() {
 module.exports = {
   getAllLastSeasonEvents,
   getAllEvents,
-  getAllEventsByCountryAndLeague
+  getAllEventsByCountryAndLeague,
+  leagues
 };

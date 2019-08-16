@@ -9,7 +9,7 @@ angular.module('myApp.view1', ['ngRoute'])
     });
   }])
 
-  .controller('View1Ctrl', ['$scope', '$http', function($scope, $http) {
+  .controller('View1Ctrl', ['$scope', '$http', '$q', function($scope, $http, $q) {
 
     let uniqEs6 = (arrArg) => {
       return arrArg.filter((elem, pos, arr) => {
@@ -241,7 +241,7 @@ angular.module('myApp.view1', ['ngRoute'])
     }
 
     ctrl.updateCountryGroupByCheckBoxes = function() {
-      if(ctrl.dateGroupBy) {
+      if (ctrl.dateGroupBy) {
         ctrl.countryLeagueGroupBy = false
       }
     }
@@ -277,6 +277,53 @@ angular.module('myApp.view1', ['ngRoute'])
         });
 
     }
+
+    function allWithProgress(promises, progress) {
+      var total = promises.length;
+      var now = 0;
+      promises.forEach(function(p) {
+        p.then(function() {
+          now++;
+          progress(now / total);
+        });
+      })
+      return $q.all(promises);
+    }
+
+    ctrl.progress = 0
+
+  /*  ctrl.refreshDatabaseNew = function() {
+      $http.get('/api/leagues', {
+          timeout: 1000000
+        })
+        .then(function(response) {
+          let leagues = response.data
+
+          leagues.reduce((promise, nextLeague) => {
+            return promise
+              .then((result) => {
+                return $http.get('/api/refreshLeagueDatabase', {
+                    timeout: 1000000,
+                    params: {
+                      country: nextLeague.team,
+                      league: nextLeague.team
+                    }
+                  })
+                  .then(function(response) {
+                    console.log(response)
+
+                  })
+                  .catch(function(data) {
+                    console.log('Error: ');
+                    console.log(data);
+                  });
+              })
+              .catch(console.error);
+          }, Promise.resolve())
+
+        })
+    }*/
+
 
     ctrl.refreshAllDatabase = function() {
       $http.get('/api/refreshAllDatabase', {

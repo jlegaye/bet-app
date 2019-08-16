@@ -25,6 +25,7 @@
 <section layout="row" layout-sm="column" layout-align="center center" layout-wrap>
   <md-button class="md-raised md-warn" ng-click="refreshAllDatabase()">Refresh with all Results</md-button>
   <md-button class="md-raised md-warn" ng-click="refreshDatabase()">Refresh with last Results</md-button>
+  <!-- <md-button class="md-raised md-warn" ng-click="refreshDatabaseNew()">New</md-button> -->
   <!-- <md-button class="md-raised md-primary" ng-click="getNextEventsToBetGoalAtHalfTime()">get Next Events to bet (Goal at Half Time)</md-button>
   <md-button class="md-raised md-primary" ng-click="getNextEventsToBet2Or3Goals()">get Next Events to bet (2 or 3 goals)</md-button>
   <md-button class="md-raised md-primary" ng-click="getNextEventsToBetMore1_5Goal()">get Next Events to bet (More than 1.5 goal)</md-button>
@@ -33,10 +34,7 @@
   <!-- <div class="label">Actions</div> -->
 </section>
 
-<section layout="row" layout-sm="column" layout-align="center center" layout-wrap>
-
-
-</section>
+<div>progress: {{progress}}</div>
 <div>
   <span>Methods filters: </span>
   <md-checkbox ng-model="moreThan1_5GoalFilter">
