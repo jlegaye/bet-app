@@ -84,7 +84,7 @@ module.exports = function(app) {
             if (err) {
               return console.error(err);
             } else {
-              // console.log("Document inserted to Collection");
+              console.log("Document inserted to Collection");
             }
           });
         }
@@ -110,7 +110,7 @@ module.exports = function(app) {
             if (err) {
               return console.error(err);
             } else {
-              // console.log("Document inserted to Collection");
+              console.log("Document inserted to Collection");
             }
           });
         }
@@ -141,7 +141,7 @@ module.exports = function(app) {
               if (err) {
                 return console.error(err);
               } else {
-                // console.log("Document inserted to Collection");
+                console.log("Document inserted to Collection");
               }
             });
 
