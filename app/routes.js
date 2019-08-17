@@ -4,7 +4,7 @@ const events = require('./events')
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 //URL de notre base
-const urlmongo = "mongodb+srv://admin:zZ01X0J95wewjfWL@cluster0-cfjcc.mongodb.net/bet-app?retryWrites=true&w=majority";
+const urlmongo = "mongodb+srv://admin:zZ01X0J95wewjfWL@cluster0-cfjcc.mongodb.net/bet-app2?retryWrites=true&w=majority";
 
 module.exports = function(app) {
 

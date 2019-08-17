@@ -28,12 +28,6 @@ const leagues = [{
     country: 'ENGLAND',
     league: 'CHAMPIONSHIP'
   }, {
-    country: 'GERMANY',
-    league: 'BUNDESLIGA'
-  }, {
-    country: 'GERMANY',
-    league: '2. BUNDESLIGA'
-  }, {
     country: 'SPAIN',
     league: 'PRIMERA DIVISION'
   }, {
@@ -46,26 +40,23 @@ const leagues = [{
     country: 'ITALY',
     league: 'SERIE B'
   }, {
+    country: 'GERMANY',
+    league: 'BUNDESLIGA'
+  }, {
+    country: 'GERMANY',
+    league: '2. BUNDESLIGA'
+  }, {
     country: 'PORTUGAL',
     league: 'PRIMEIRA LIGA'
   }, {
-    country: 'ARGENTINA',
-    league: 'SUPERLIGA'
-  },
-  // {
-  //  country: 'CHILE',
-  //  league: 'PRIMERA DIVISION'
-  //},
-  {
-    country: 'RUSSIA',
-    league: 'RUSSIAN FOOTBALL PREMIER LEAGUE'
-  }, {
-    country: 'USA',
-    league: 'MAJOR LEAGUE SOCCER',
-    seasonOffset: true
+    country: 'PORTUGAL',
+    league: 'LIGAPRO'
   }, {
     country: 'ALGERIA',
     league: 'LIGUE 1'
+  }, {
+    country: 'ARGENTINA',
+    league: 'SUPERLIGA'
   }, {
     country: 'ARMENIA',
     league: 'PREMIER LEAGUE'
@@ -76,9 +67,15 @@ const leagues = [{
     country: 'AZERBAIJAN',
     league: 'PREMIER LEAGUE'
   }, {
+    country: 'BELGIUM',
+    league: 'FIRST DIVISION A'
+  }, {
     country: 'BELARUS',
     league: 'PREMIER LEAGUE',
     seasonOffset: true
+  }, {
+    country: 'BOSNIA AND HERZEGOVINA',
+    league: 'PREMIER LEAGUE'
   }, {
     country: 'BRAZIL',
     league: 'SERIE A',
@@ -86,29 +83,41 @@ const leagues = [{
   }, {
     country: 'BULGARIA',
     league: 'FIRST PROFESSIONAL FOOTBALL LEAGUE'
+  },
+  // {
+  //  country: 'CHILE',
+  //  league: 'PRIMERA DIVISION'
+  //},
+  {
+    country: 'CYPRUS',
+    league: 'DIVISION 1'
   }, {
     country: 'COLOMBIA',
     league: 'PRIMERA A'
-  }, {
-    country: 'CYPRUS',
-    league: 'DIVISION 1'
   }, {
     country: 'CROATIA',
     league: 'PRVA HNL'
   }, {
     country: 'DENMARK',
     league: 'SUPERLIGAEN'
-  },
-  {
-    country: 'ESTONIA',
-    league: 'MEISTRILIIGA',
-    seasonOffset: true
   }, {
     country: 'SCOTLAND',
     league: 'SCOTTISH PREMIERSHIP'
   }, {
+    country: 'ESTONIA',
+    league: 'MEISTRILIIGA',
+    seasonOffset: true
+  }, {
+    country: 'USA',
+    league: 'MAJOR LEAGUE SOCCER',
+    seasonOffset: true
+  }, {
     country: 'FINLAND',
     league: 'VEIKKAUSLIIGA',
+    seasonOffset: true
+  }, {
+    country: 'GEORGIA',
+    league: 'EROVNLI LIGA',
     seasonOffset: true
   }, {
     country: 'GREECE',
@@ -117,11 +126,7 @@ const leagues = [{
     country: 'HUNGARY',
     league: 'NB I'
   }, {
-    country: 'JAPAN',
-    league: 'J1 LEAGUE',
-    seasonOffset: true
-  }, {
-    country: 'KAZAKHSTAN',
+    country: 'FAROE ISLANDS',
     league: 'PREMIER LEAGUE',
     seasonOffset: true
   }, {
@@ -131,6 +136,32 @@ const leagues = [{
   }, {
     country: 'NORTHERN IRELAND',
     league: 'NIFL PREMIERSHIP'
+  }, {
+    country: 'ICELAND',
+    league: 'URVALSDEILD',
+    seasonOffset: true
+  }, {
+    country: 'JAPAN',
+    league: 'J1 LEAGUE',
+    seasonOffset: true
+  }, {
+    country: 'KAZAKHSTAN',
+    league: 'PREMIER LEAGUE',
+    seasonOffset: true
+  }, {
+    country: 'KOSOVO',
+    league: 'SUPERLIGA'
+  }, {
+    country: 'LATVIA',
+    league: 'VIRSLIGA',
+    seasonOffset: true
+  }, {
+    country: 'LITHUANIA',
+    league: 'A LYGA',
+    seasonOffset: true
+  }, {
+    country: 'LUXEMBOURG',
+    league: 'NATIONAL DIVISION'
   }, {
     country: 'MALTA',
     league: 'PREMIER LEAGUE'
@@ -144,6 +175,9 @@ const leagues = [{
     country: 'NORWAY',
     league: 'ELITESERIEN',
     seasonOffset: true
+  }, {
+    country: 'PARAGUAY',
+    league: 'PRIMERA DIVISION'
   }, {
     country: 'WALES',
     league: 'WELSH PREMIER LEAGUE'
@@ -160,11 +194,17 @@ const leagues = [{
     country: 'ROMANIA',
     league: 'LIGA I'
   }, {
+    country: 'RUSSIA',
+    league: 'RUSSIAN FOOTBALL PREMIER LEAGUE'
+  }, {
     country: 'SERBIA',
     league: 'SUPERLIGA'
   }, {
     country: 'SLOVAKIA',
     league: 'SUPER LIGA'
+  }, {
+    country: 'SLOVENIA',
+    league: 'PRVA LIGA'
   }, {
     country: 'SWEDEN',
     league: 'ALLSVENSKAN',
