@@ -62,19 +62,24 @@ module.exports = function(app) {
     _id: false
   });
 
-  EventSchema.index({
-    homeTeam: 1,
-    awayTeam: 1,
-    date: 1,
-    status: 1
+  var BetSchema = mongoose.Schema({
+    _id: String,
+    date: Date,
+    betTeam: String,
+    status: String,
+    idEvent: String,
+    method: String
+  }, {
+    _id: false
   });
 
   // compile schema to model
   var Event = mongoose.model('Event', EventSchema, 'events');
+  var Bet = mongoose.model('Bet', BetSchema, 'bets');
 
   app.get('/api/refreshLeagueDatabase', function(req, res) {
 
-      events.getAllEventsByCountryAndLeague(req.query.country, req.query.league)
+    events.getAllEventsByCountryAndLeague(req.query.country, req.query.league)
       .then((result) => {
         // save multiple documents to the collection referenced by Book Model
         for (var event of result) {
@@ -94,6 +99,160 @@ module.exports = function(app) {
     res.json({
       'ok': 'ok'
     })
+  })
+
+  app.get('/api/addBet', function(req, res) {
+    let bet = JSON.parse(req.query.bet)
+
+    console.log('bet')
+    console.log(bet)
+
+    Bet.findByIdAndUpdate(bet['_id'], bet, {
+      upsert: true
+    }, function(err, docs) {
+      if (err) {
+        return console.error(err);
+      } else {
+        console.log("Bet inserted to Collection");
+        res.json({
+          'ok': 'ok'
+        })
+      }
+    });
+
+  })
+
+  app.get('/api/finishedBets', function(req, res) {
+    let queryToExtractFinishedBets = Bet.find({
+      $and: [{
+        betTeam: {
+          $eq: req.query.betTeam
+        }
+      }, {
+        method: {
+          $eq: req.query.methodName
+        }
+      }, {
+        $or: [{
+          status: 'WON'
+        }, {
+          status: 'LOST'
+        }]
+      }]
+
+    }).sort({
+      date: 'desc'
+    })
+    let promiseQueryToExtractFinishedBets = queryToExtractFinishedBets.exec()
+    promiseQueryToExtractFinishedBets.then(finishedBets => {
+      res.json(finishedBets)
+    })
+  })
+
+  app.get('/api/alreadyBet', function(req, res) {
+    let betId = req.query.id
+    // console.log(betId)
+    let queryToExtractAlreadyBet = Bet.findOne({
+
+      _id: {
+        $eq: betId
+      }
+    })
+    let promiseQueryToExtractAlreadyBet = queryToExtractAlreadyBet.exec()
+    promiseQueryToExtractAlreadyBet.then(alreadyBet => {
+      if(alreadyBet != null) {
+        return res.json({
+          found: true
+        })
+      } else {
+        return res.json({
+          found: true
+        })
+      }
+      return res.json({
+        found: true
+      })
+    }).catch((err) => res.json({
+      found: false
+    }))
+
+  })
+
+  app.get('/api/refreshBets', function(req, res) {
+
+
+    let queryToExtractWaitingBets = Bet.find({
+      status: {
+        $eq: 'WAIT'
+      }
+    })
+    let promiseQueryToExtractWaitingBets = queryToExtractWaitingBets.exec()
+    return promiseQueryToExtractWaitingBets.then(waitingBets => {
+
+
+      let promisesWaitingBets = waitingBets.map(waitingBet => {
+        let idEvent = waitingBet.idEvent
+        let method = waitingBet.method
+
+        let queryToExtractAssociatedEvent = Event.findOne({
+          _id: {
+            $eq: idEvent
+          }
+        })
+        let promiseQueryToExtractAssociatedEvent = queryToExtractAssociatedEvent.exec()
+        return promiseQueryToExtractAssociatedEvent.then(event => {
+          let status = event.status
+          if (status == 'FIN') {
+            let newBetStatus = 'LOST'
+            if (method == 'secondHalfBetter' && event.secondHalfBetter) {
+              newBetStatus = 'WON'
+            }
+            if (method == 'moreThan1_5Goal' && event.fullTimeGoals >= 2) {
+              newBetStatus = 'WON'
+            }
+            if (method == 'goalAtHalfTime' && event.halfTime1Goals > 0) {
+              newBetStatus = 'WON'
+            }
+            if (method == 'twoOrThreeGoals' && event.twoOrThreeGoals) {
+              newBetStatus = 'WON'
+            }
+            waitingBet.status = newBetStatus
+            return Bet.findByIdAndUpdate(waitingBet['_id'], waitingBet, {
+              upsert: true
+            }, function(err, docs) {
+              if (err) {
+                return console.error(err);
+              } else {
+                console.log("Bet updated to Collection");
+                res.json({
+                  'ok': 'ok'
+                })
+              }
+            });
+
+
+
+          } else {
+            return {
+              'ok': 'ok'
+            }
+          }
+        })
+
+
+      })
+
+      Promise.all(promisesWaitingBets)
+        .then(function(allNextEventsToBet) {
+
+          res.json({
+            'ok': 'ok'
+          })
+        })
+
+
+    })
+
   })
 
   app.get('/api/refreshDatabase', function(req, res) {
@@ -155,7 +314,6 @@ module.exports = function(app) {
     })
   })
 
-
   app.get('/api/nextEvent', function(req, res) {
     let queryToExtractNextEvent = Event.findOne({
       $and: [{
@@ -177,7 +335,7 @@ module.exports = function(app) {
     return promiseQueryToExtractNextEvent.then(firstNonFinishedMatch => {
       res.json(firstNonFinishedMatch)
     })
-  });
+  })
 
   app.get('/api/finishedMatches', function(req, res) {
     let queryToExtractTeams = Event.find({
@@ -206,7 +364,7 @@ module.exports = function(app) {
     promiseQueryToExtractTeams.then(teams => {
       res.json(teams)
     })
-  });
+  })
 
   app.get('/api/teams', function(req, res) {
     let queryToExtractTeams = Event.find({
@@ -220,7 +378,7 @@ module.exports = function(app) {
     promiseQueryToExtractTeams.then(teams => {
       res.json(teams)
     })
-  });
+  })
 
   app.get('/api/nextEventsToBet', function(req, res) {
 
@@ -565,18 +723,37 @@ module.exports = function(app) {
 
   })
 
+  app.get('/api/lastSeasonMatches', function(req, res) {
+    let queryToExtractLastFinishedMatches = Event.find({
+        $and: [{
+          status: {
+            $eq: 'FIN'
+          }
+        }, {
+          $and: [{
+            country: req.query.country
+          }, {
+            league: req.query.league
+          }]
+        }]
 
-  // api ---------------------------------------------------------------------
-  // get all todos
-  app.get('/api/results', function(req, res) {
-    bet.resolveSoccer(req.query.country, req.query.league)
-      .then((result) => res.json(result))
-      .catch((err) => console.log(err))
-    /*bet.getHockeyEventsPredictions(req.query.url, req.query.under_check, req.query.iteration_check)
-      .then((result) => res.json(result))
-      .catch((err) => console.log(err))*/
+      }, {
+        _id: 1,
+        date: 1,
+        homeTeam: 1,
+        awayTeam: 1,
+        country: 1,
+        league: 1
+      })
+      .
+    limit(25).sort({
+      date: 'desc'
+    })
+    let promiseQueryToExtractLastFinishedMatches = queryToExtractLastFinishedMatches.exec()
+    promiseQueryToExtractLastFinishedMatches.then(finishedMatches => {
+      res.json(finishedMatches)
+    })
   });
-
 
   // application -------------------------------------------------------------
   app.get('*', function(req, res) {

@@ -1,5 +1,43 @@
-<p>This is the partial for view 2.</p>
-<p>
-  Showing of 'interpolate' filter:
-  {{ 'Current version is v%VERSION%.' | interpolate }}
-</p>
+<section layout="row" layout-sm="column" layout-align="center center" layout-wrap>
+  <md-button class="md-raised md-warn" ng-click="getLastSeasonMatches()">get last season matches</md-button>
+  <md-button class="md-raised md-warn" ng-click="refreshBets()">refresh bets</md-button>
+</section>
+
+
+<div ng-show="!isLoading">
+  <md-list class="md-dense" flex>
+
+
+    <md-list-item class="md-3-line event" ng-repeat="(key, value) in allLastSeasonMatches | map:toCountryAndLeague | groupBy:'countryAndLeague'">
+      <div class="md-list-item-text" layout="column">
+        <h1>{{key}}</h1>
+        <div ng-repeat="event in value">
+          <h2 ng-if="event.round != null">Round: {{event.round}}/{{event.nbOfRounds}}</h2>
+          <h2>{{event.date | date :  "EEEE, MMMM d, y HH:mm" }}</h2>
+          <h2><span class="homTeam">{{event.homeTeam}}</span> <span class="logo-versus"><span> <span class="awayTeam">{{event.awayTeam}}</span></h2>
+          <!-- <h3 ng-repeat="method in eventToBet.mustBetObj">
+            <span>{{method.methodName}} </span><span style="color:blue">{{method.iteration}}</span>
+          </h3> -->
+          <md-radio-group ng-model="event.method">
+
+            <md-radio-button value="secondHalfBetter">Second half better</md-radio-button>
+            <md-radio-button value="moreThan1_5Goal">More than 1.5 goal </md-radio-button>
+            <md-radio-button value="goalAtHalfTime">Goal et halftime</md-radio-button>
+            <md-radio-button value="twoOrThreeGoals">Two or three goals</md-radio-button>
+
+          </md-radio-group>
+          <md-radio-group ng-model="event.betTeam">
+
+            <md-radio-button value="{{event.homeTeam}}">{{event.homeTeam}}</md-radio-button>
+            <md-radio-button value="{{event.awayTeam}}">{{event.awayTeam}}</md-radio-button>
+
+          </md-radio-group>
+          <md-button class="md-raised md-primary" ng-click="addBet(event)">add bet</md-button>
+        </div>
+      </div>
+    </md-list-item>
+  </md-list>
+</div>
+<div ng-show="isLoading">
+  <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+</div>

@@ -142,8 +142,6 @@ angular.module('myApp.view1', ['ngRoute'])
                 let finishedMatches = response.data
                 // console.log('finishedMatches.length: ' + finishedMatches.length)
 
-                // let mustBetsecondHalfBetter = mustBetCriteria(finishedMatches, 'secondHalfBetter')
-                // let mustBet = mustBetCriteria(finishedMatches, 'twoOrThreeGoals')
 
                 let mustBetObj = [
                   mustBetCriteria(finishedMatches, secondHalfBetter, 'secondHalfBetter'),
@@ -154,30 +152,77 @@ angular.module('myApp.view1', ['ngRoute'])
                 ]
                 // console.log('mustBet: ' + mustBet)
                 if (mustBetObj.map(obj => obj.mustBet).includes(true)) {
-                  return $http.get('/api/nextEvent', {
-                      params: {
-                        team: team
+                  mustBetObj = mustBetObj.filter(o => o.mustBet)
+                  let betTeam = team
+
+                  let methodsLevelspromises = mustBetObj.map(meth => {
+                    let methodName = meth.methodName
+                    return ctrl.getLevel(betTeam, methodName)
+
+                  })
+
+                  return Promise.all(methodsLevelspromises)
+                    .then(methodsLevels => {
+                      // console.log('methodsLevels: ', methodsLevels)
+                      for (let met of methodsLevels) {
+                        mustBetObj.filter(m => m.methodName == met.methodName).map(m => m.level = met.level)
                       }
+                      // console.log('mustBetObj: ', mustBetObj)
+
+
+
+
+
+                      return $http.get('/api/nextEvent', {
+                          params: {
+                            team: team
+                          }
+                        })
+                        .then(response => {
+                          let nextEvent = response.data
+
+
+                          let methodsAlreadyBetspromises = mustBetObj.map(meth => {
+                            let methodName = meth.methodName
+                            return ctrl.isEventAlreadyBet(nextEvent._id, team, methodName)
+
+                          })
+
+                          return Promise.all(methodsAlreadyBetspromises)
+                            .then(methodsFound => {
+                              console.log('methodsFound: ', methodsFound)
+                              for (let met of methodsFound) {
+                                mustBetObj.filter(m => m.methodName == met.methodName).map(m => m.alreadyBet = met.alreadyBet)
+                              }
+                              console.log('mustBetObj: ', mustBetObj)
+                              let event = {}
+                              event._id = nextEvent._id
+                              event.date = nextEvent.date
+                              event.country = nextEvent.country
+                              event.league = nextEvent.league
+                              event.team = team
+                              event.nbFinishedMatches = finishedMatches.length
+                              event.mustBetObj = mustBetObj.filter(o => o.mustBet)
+                              // event.maxIteration = mustBet[1]
+                              // event.method = '2nd_Half_better'
+                              event.round = nextEvent.round
+                              event.nbOfRounds = nextEvent.nbOfRounds
+                              event.nextMatch = {
+                                homeTeam: nextEvent.homeTeam,
+                                awayTeam: nextEvent.awayTeam,
+                                date: nextEvent.date,
+                              }
+                              return event
+                            })
+
+
+                        })
+
                     })
-                    .then(response => {
-                      let nextEvent = response.data
-                      let event = {}
-                      event.country = nextEvent.country
-                      event.league = nextEvent.league
-                      event.team = team
-                      event.nbFinishedMatches = finishedMatches.length
-                      event.mustBetObj = mustBetObj.filter(o => o.mustBet)
-                      // event.maxIteration = mustBet[1]
-                      // event.method = '2nd_Half_better'
-                      event.round = nextEvent.round
-                      event.nbOfRounds = nextEvent.nbOfRounds
-                      event.nextMatch = {
-                        homeTeam: nextEvent.homeTeam,
-                        awayTeam: nextEvent.awayTeam,
-                        date: nextEvent.date,
-                      }
-                      return event
-                    })
+
+
+
+
                 } else {
                   return {}
                 }
@@ -292,37 +337,37 @@ angular.module('myApp.view1', ['ngRoute'])
 
     ctrl.progress = 0
 
-  /*  ctrl.refreshDatabaseNew = function() {
-      $http.get('/api/leagues', {
-          timeout: 1000000
-        })
-        .then(function(response) {
-          let leagues = response.data
+    /*  ctrl.refreshDatabaseNew = function() {
+        $http.get('/api/leagues', {
+            timeout: 1000000
+          })
+          .then(function(response) {
+            let leagues = response.data
 
-          leagues.reduce((promise, nextLeague) => {
-            return promise
-              .then((result) => {
-                return $http.get('/api/refreshLeagueDatabase', {
-                    timeout: 1000000,
-                    params: {
-                      country: nextLeague.team,
-                      league: nextLeague.team
-                    }
-                  })
-                  .then(function(response) {
-                    console.log(response)
+            leagues.reduce((promise, nextLeague) => {
+              return promise
+                .then((result) => {
+                  return $http.get('/api/refreshLeagueDatabase', {
+                      timeout: 1000000,
+                      params: {
+                        country: nextLeague.team,
+                        league: nextLeague.team
+                      }
+                    })
+                    .then(function(response) {
+                      console.log(response)
 
-                  })
-                  .catch(function(data) {
-                    console.log('Error: ');
-                    console.log(data);
-                  });
-              })
-              .catch(console.error);
-          }, Promise.resolve())
+                    })
+                    .catch(function(data) {
+                      console.log('Error: ');
+                      console.log(data);
+                    });
+                })
+                .catch(console.error);
+            }, Promise.resolve())
 
-        })
-    }*/
+          })
+      }*/
 
 
     ctrl.refreshAllDatabase = function() {
@@ -353,6 +398,106 @@ angular.module('myApp.view1', ['ngRoute'])
         .catch(function(data) {
           console.log('Error: ');
           console.log(data);
+        });
+
+    }
+
+    ctrl.addBet = function(event, methodName) {
+      console.log('add bet')
+      console.log('event: ', event)
+      let betId = event._id + '_' + event.team.replace(/ /g, '_') + '_' + methodName
+      console.log('betId: ', betId)
+      let bet = {
+        _id: betId,
+        date: event.date,
+        betTeam: event.team,
+        status: 'WAIT',
+        idEvent: event._id,
+        method: methodName
+      }
+
+      console.log('bet: ', bet)
+
+      $http.get('/api/addBet', {
+          timeout: 1000000,
+          params: {
+            bet: bet
+          }
+        })
+        .then(function(response) {
+          console.log('done')
+        })
+    }
+
+    ctrl.isEventAlreadyBet = function(eventId, betTeam, methodName) {
+      console.log('eventId: ', eventId)
+      console.log('methodName: ', methodName)
+      let isAlreadyBet = false
+      let betId = eventId + '_' + betTeam + '_' + methodName
+      console.log('betId: ', betId)
+
+      return $http.get('/api/alreadyBet', {
+          timeout: 1000000,
+          params: {
+            id: betId
+
+          }
+        })
+        .then(function(response) {
+
+          console.log('response.data !!!!!!')
+          console.log(response.data)
+          return {
+            methodName: methodName,
+            alreadyBet: response.data.found
+          }
+        })
+        .catch(function(data) {
+          console.log('Error: ');
+          return {
+
+          }
+
+        });
+
+    }
+
+    ctrl.getLevel = function(betTeam, methodName) {
+      // console.log('betTeam: ', betTeam)
+      // console.log('methodName: ', methodName)
+      let level = 0
+
+      return $http.get('/api/finishedBets', {
+          timeout: 1000000,
+          params: {
+            betTeam: betTeam,
+            methodName: methodName
+          }
+        })
+        .then(function(response) {
+          // console.log('done')
+          let finishedBets = response.data
+          if (finishedBets.length > 0) {
+
+            // console.log('finishedBets: ', finishedBets)
+            let lostList = finishedBets.map(bet => bet.status == 'LOST')
+            // console.log('lostList: ', lostList)
+            let i = 0
+            while (lostList[i] && i < lostList.length) {
+              i++
+              level++
+            }
+          }
+
+          return {
+            methodName: methodName,
+            level: level
+          };
+        })
+        .catch(function(data) {
+          console.log('Error: ');
+          console.log(data);
+
         });
 
     }

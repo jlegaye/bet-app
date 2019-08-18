@@ -16,12 +16,6 @@
   </md-select>
 </md-input-container> -->
 
-<!-- <md-button ng-click="getResults()">get Results</md-button>
-<p>{{results}}</p>
-<md-button ng-click="getEvents()">get Events from DB</md-button>
-<p>{{events}}</p> -->
-<!-- <md-button ng-click="createEvent()">create Event in DB</md-button> -->
-
 <section layout="row" layout-sm="column" layout-align="center center" layout-wrap>
   <md-button class="md-raised md-warn" ng-click="refreshAllDatabase()">Refresh with all Results</md-button>
   <md-button class="md-raised md-warn" ng-click="refreshDatabase()">Refresh with last Results</md-button>
@@ -34,7 +28,6 @@
   <!-- <div class="label">Actions</div> -->
 </section>
 
-<div>progress: {{progress}}</div>
 <div>
   <span>Methods filters: </span>
   <md-checkbox ng-model="moreThan1_5GoalFilter">
@@ -72,8 +65,24 @@
                 class="awayTeam">{{eventToBet.nextMatch.awayTeam}}</span></h2>
         <h3 ng-repeat="method in eventToBet.mustBetObj">
           <span>{{method.methodName}} </span><span style="color:blue">{{method.iteration}}</span>
+          <md-button ng-show="!method.alreadyBet" class="md-raised md-primary" ng-click="addBet(eventToBet, method.methodName)">add bet</md-button>
         </h3>
         <h3>Number of matches calculated: <span style="color:blue">{{eventToBet.nbFinishedMatches}}</span></h3>
+        <!-- <md-radio-group ng-model="eventToBet.method">
+
+          <md-radio-button value="secondHalfBetter">Second half better</md-radio-button>
+          <md-radio-button value="moreThan1_5Goal">More than 1.5 goal </md-radio-button>
+          <md-radio-button value="goalAtHalfTime">Goal et halftime</md-radio-button>
+          <md-radio-button value="twoOrThreeGoals">Two or three goals</md-radio-button>
+
+        </md-radio-group>
+        <md-radio-group ng-init="eventToBet.betTeam = eventToBet.team" ng-model="eventToBet.betTeam">
+
+          <md-radio-button value="{{eventToBet.nextMatch.homeTeam}}">{{eventToBet.nextMatch.homeTeam}}</md-radio-button>
+          <md-radio-button value="{{eventToBet.nextMatch.awayTeam}}">{{eventToBet.nextMatch.awayTeam}}</md-radio-button>
+
+        </md-radio-group>
+        <md-button class="md-raised md-primary" ng-click="addBet(eventToBet)">add bet</md-button> -->
       </div>
     </md-list-item>
 
@@ -87,8 +96,24 @@
                   class="awayTeam">{{eventToBet.nextMatch.awayTeam}}</span></h2>
           <h3 ng-repeat="method in eventToBet.mustBetObj">
             <span>{{method.methodName}} </span><span style="color:blue">{{method.iteration}}</span>
+            <md-button ng-show="!method.alreadyBet" class="md-raised md-primary" ng-click="addBet(eventToBet, method.methodName)">add bet</md-button>
           </h3>
           <h3>Number of matches calculated: <span style="color:blue">{{eventToBet.nbFinishedMatches}}</span></h3>
+          <!-- <md-radio-group ng-model="eventToBet.method">
+
+            <md-radio-button value="secondHalfBetter">Second half better</md-radio-button>
+            <md-radio-button value="moreThan1_5Goal">More than 1.5 goal </md-radio-button>
+            <md-radio-button value="goalAtHalfTime">Goal et halftime</md-radio-button>
+            <md-radio-button value="twoOrThreeGoals">Two or three goals</md-radio-button>
+
+          </md-radio-group>
+          <md-radio-group ng-init="eventToBet.betTeam = eventToBet.team" ng-model="eventToBet.betTeam">
+
+            <md-radio-button value="{{eventToBet.nextMatch.homeTeam}}">{{eventToBet.nextMatch.homeTeam}}</md-radio-button>
+            <md-radio-button value="{{eventToBet.nextMatch.awayTeam}}">{{eventToBet.nextMatch.awayTeam}}</md-radio-button>
+
+          </md-radio-group>
+          <md-button class="md-raised md-primary" ng-click="addBet(eventToBet)">add bet</md-button> -->
         </div>
       </div>
     </md-list-item>
@@ -103,8 +128,24 @@
                   class="awayTeam">{{eventToBet.nextMatch.awayTeam}}</span></h2>
           <h3 ng-repeat="method in eventToBet.mustBetObj">
             <span>{{method.methodName}} </span><span style="color:blue">{{method.iteration}}</span>
+            <md-button ng-show="!method.alreadyBet" class="md-raised md-primary" ng-click="addBet(eventToBet, method.methodName)">add bet</md-button>
           </h3>
           <h3>Number of matches calculated: <span style="color:blue">{{eventToBet.nbFinishedMatches}}</span></h3>
+          <!-- <md-radio-group ng-model="eventToBet.method">
+
+            <md-radio-button value="secondHalfBetter">Second half better</md-radio-button>
+            <md-radio-button value="moreThan1_5Goal">More than 1.5 goal </md-radio-button>
+            <md-radio-button value="goalAtHalfTime">Goal et halftime</md-radio-button>
+            <md-radio-button value="twoOrThreeGoals">Two or three goals</md-radio-button>
+
+          </md-radio-group>
+          <md-radio-group ng-init="eventToBet.betTeam = eventToBet.team" ng-model="eventToBet.betTeam">
+
+            <md-radio-button value="{{eventToBet.nextMatch.homeTeam}}">{{eventToBet.nextMatch.homeTeam}}</md-radio-button>
+            <md-radio-button value="{{eventToBet.nextMatch.awayTeam}}">{{eventToBet.nextMatch.awayTeam}}</md-radio-button>
+
+          </md-radio-group>
+          <md-button class="md-raised md-primary" ng-click="addBet(eventToBet)">add bet</md-button> -->
         </div>
       </div>
     </md-list-item>
