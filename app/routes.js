@@ -151,7 +151,7 @@ module.exports = function(app) {
 
   app.get('/api/alreadyBet', function(req, res) {
     let betId = req.query.id
-    // console.log(betId)
+    console.log(betId)
     let queryToExtractAlreadyBet = Bet.findOne({
 
       _id: {
@@ -160,18 +160,18 @@ module.exports = function(app) {
     })
     let promiseQueryToExtractAlreadyBet = queryToExtractAlreadyBet.exec()
     promiseQueryToExtractAlreadyBet.then(alreadyBet => {
-      if(alreadyBet != null) {
+      console.log(alreadyBet)
+      if(alreadyBet !== null && alreadyBet !== undefined) {
+        console.log('FOUND !!!!!!!!!!!!!!!!!!!')
         return res.json({
           found: true
         })
       } else {
+        console.log('NOT FOUND !!!!!!!!!!!!!!!!!!!')
         return res.json({
-          found: true
+          found: false
         })
       }
-      return res.json({
-        found: true
-      })
     }).catch((err) => res.json({
       found: false
     }))

@@ -433,7 +433,7 @@ angular.module('myApp.view1', ['ngRoute'])
       console.log('eventId: ', eventId)
       console.log('methodName: ', methodName)
       let isAlreadyBet = false
-      let betId = eventId + '_' + betTeam + '_' + methodName
+      let betId = eventId + '_' + betTeam.replace(/ /g, '_') + '_' + methodName
       console.log('betId: ', betId)
 
       return $http.get('/api/alreadyBet', {
