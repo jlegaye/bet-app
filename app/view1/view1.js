@@ -314,6 +314,13 @@ angular.module('myApp.view1', ['ngRoute'])
         })
         .then(function(response) {
           console.log(response)
+          console.log('last Results refreshed')
+          $http.get('/api/refreshBets', {
+              timeout: 1000000
+            })
+            .then(function(response) {
+              console.log('bet refreshed')
+            })
 
         })
         .catch(function(data) {
