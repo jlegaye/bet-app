@@ -77,35 +77,63 @@ module.exports = function(app) {
   var Event = mongoose.model('Event', EventSchema, 'events');
   var Bet = mongoose.model('Bet', BetSchema, 'bets');
 
-  app.get('/api/refreshLeagueDatabase', function(req, res) {
+  // let updateEventsInDatabase = function(events) {
+  //   let p = Promise.resolve(); // Q() in q
+  //
+  //   events.forEach(event =>
+  //     p = p.then(() => {
+  //       return Event.findByIdAndUpdate(event['_id'], event, {
+  //         upsert: true
+  //       }, function(err, docs) {
+  //         if (err) {
+  //           return console.error(err);
+  //         } else {
+  //           console.log('Document (' + event['_id'] + ') inserted/updated to Collection');
+  //         }
+  //       })
+  //     })
+  //   )
+  //   return p
+  // }
 
-    events.getAllEventsByCountryAndLeague(req.query.country, req.query.league)
+  var updateEvent = function(ev) {
+    Event.findByIdAndUpdate(ev['_id'], ev, {
+      upsert: true
+    }, function(err, docs) {
+      if (err) {
+        return console.error(err);
+      } else {
+        // console.log('Document (' + ev['_id'] + ') inserted/updated to Collection');
+      }
+    })
+  }
+  var updateEventsInDatabase = function(events) {
+    var p = Promise.resolve(); // Q() in q
+
+    events.forEach(ev => { return p = p.then(() => updateEvent(ev))})
+    return p
+  };
+
+  app.get('/api/refreshLeagueDatabase', function(req, res) {
+    let country = req.query.country
+    let league = req.query.league
+    return events.getAllLastEventsByCountryAndLeague(req.query.country, req.query.league)
       .then((result) => {
         // save multiple documents to the collection referenced by Book Model
-        for (var event of result) {
-          Event.findByIdAndUpdate(event['_id'], event, {
-            upsert: true
-          }, function(err, docs) {
-            if (err) {
-              return console.error(err);
-            } else {
-              console.log("Document inserted to Collection");
-            }
-          });
-        }
+
+        updateEventsInDatabase(result)
+
+        res.json({
+          message: country + ' ' + league + ' updated !'
+        })
 
       })
       .catch((err) => console.log(err))
-    res.json({
-      'ok': 'ok'
-    })
+
   })
 
   app.get('/api/addBet', function(req, res) {
     let bet = JSON.parse(req.query.bet)
-
-    console.log('bet')
-    console.log(bet)
 
     Bet.findByIdAndUpdate(bet['_id'], bet, {
       upsert: true
@@ -113,7 +141,7 @@ module.exports = function(app) {
       if (err) {
         return console.error(err);
       } else {
-        console.log("Bet inserted to Collection");
+        console.log('Bet (' + bet['_id'] + ') inserted to Collection');
         res.json({
           'ok': 'ok'
         })
@@ -151,7 +179,6 @@ module.exports = function(app) {
 
   app.get('/api/alreadyBet', function(req, res) {
     let betId = req.query.id
-    console.log(betId)
     let queryToExtractAlreadyBet = Bet.findOne({
 
       _id: {
@@ -160,14 +187,11 @@ module.exports = function(app) {
     })
     let promiseQueryToExtractAlreadyBet = queryToExtractAlreadyBet.exec()
     promiseQueryToExtractAlreadyBet.then(alreadyBet => {
-      console.log(alreadyBet)
-      if(alreadyBet !== null && alreadyBet !== undefined) {
-        console.log('FOUND !!!!!!!!!!!!!!!!!!!')
+      if (alreadyBet !== null && alreadyBet !== undefined) {
         return res.json({
           found: true
         })
       } else {
-        console.log('NOT FOUND !!!!!!!!!!!!!!!!!!!')
         return res.json({
           found: false
         })
@@ -223,7 +247,7 @@ module.exports = function(app) {
               if (err) {
                 return console.error(err);
               } else {
-                console.log("Bet updated to Collection");
+                console.log('Bet (' + waitingBet['_id'] + ') updated to Collection');
                 res.json({
                   'ok': 'ok'
                 })
@@ -269,7 +293,7 @@ module.exports = function(app) {
             if (err) {
               return console.error(err);
             } else {
-              console.log("Document inserted to Collection");
+              console.log('Document (' + event['_id'] + ') inserted/updated to Collection');
             }
           });
         }
@@ -300,7 +324,7 @@ module.exports = function(app) {
               if (err) {
                 return console.error(err);
               } else {
-                console.log("Document inserted to Collection");
+                console.log('Document (' + event['_id'] + ') inserted/updated to Collection');
               }
             });
 

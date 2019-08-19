@@ -531,7 +531,16 @@ let olderFirst = (a, b) => {
 
 
 async function getAllEventsByCountryAndLeague(country, league) {
-  console.log('getAllEvents')
+  console.log('getAllEventsByCountryAndLeague ' + country + ' ' + league)
+  const browser = await puppeteer.launch(launchOptions);
+  var result = await getAllSoccerEventsByCountryAndLeague(browser, country, league);
+  await browser.close()
+  return result
+}
+
+async function getAllLastEventsByCountryAndLeague(country, league) {
+  console.log('getAllLastEventsByCountryAndLeague ' + country + ' ' + league)
+  nbOfSeasons = 1
   const browser = await puppeteer.launch(launchOptions);
   var result = await getAllSoccerEventsByCountryAndLeague(browser, country, league);
   await browser.close()
@@ -574,5 +583,6 @@ module.exports = {
   getAllLastSeasonEvents,
   getAllEvents,
   getAllEventsByCountryAndLeague,
+  getAllLastEventsByCountryAndLeague,
   leagues
 };
