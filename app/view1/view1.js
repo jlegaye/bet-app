@@ -266,27 +266,6 @@ angular.module('myApp.view1', ['ngRoute'])
       return event
     }
 
-    ctrl.refreshDatabase = function () {
-      $http.get('/api/refreshDatabase', {
-        timeout: 1000000
-      })
-        .then(function (response) {
-          // console.log(response)
-          // console.log('last Results refreshed')
-          $http.get('/api/refreshBets', {
-            timeout: 1000000
-          })
-            .then(function (response) {
-              console.log('bet refreshed')
-            })
-
-        })
-        .catch(function (data) {
-          console.log('Error: ');
-          console.log(data);
-        });
-
-    }
 
     let allWithProgress = function (promises, progress) {
       var total = promises.length;
@@ -303,7 +282,7 @@ angular.module('myApp.view1', ['ngRoute'])
     ctrl.progress = 0
     ctrl.refreshProgress = 0
 
-    let refreshLastSeasonOfLeagueInDatabase = function (league) {
+    let refreshLastSeasonOfLeagueInDatabase = function (league, progress, finished, callback) {
       return $http.get('/api/refreshLeagueDatabase', {
         timeout: 1000000,
         params: {
@@ -313,12 +292,20 @@ angular.module('myApp.view1', ['ngRoute'])
       })
         .then(function (response) {
           console.log(response.data.message)
+          callback(progress)
 
         })
         .catch(function (data) {
           console.log('Error: ');
           console.log(data);
-        });
+          callback(progress)
+          
+          
+        }).finally(() => {
+          if(finished) {
+            ctrl.isRefreshLoading = false
+          }
+        })
     }
 
     let refreshLastSeasonOfAllLeaguesInDatabase = function (leagues) {
@@ -326,14 +313,17 @@ angular.module('myApp.view1', ['ngRoute'])
 
       leagues.forEach((league, i) =>
         p = p.then(() => {
-          ctrl.refreshProgress = (i + 1) * 100 / leagues.length
-          return refreshLastSeasonOfLeagueInDatabase(league)
+          let progress = (i + 1) * 100 / leagues.length
+          let finished = (i + 1) == leagues.length
+          return refreshLastSeasonOfLeagueInDatabase(league, progress, finished, (p) => {
+            ctrl.refreshProgress = p.toFixed(2)
+          })
         })
       )
       return p
     }
 
-    ctrl.NEWrefreshDatabase = function () {
+    ctrl.refreshDatabase = function () {
       ctrl.isRefreshLoading = true
       $http.get('/api/leagues', {
         timeout: 1000000
@@ -342,10 +332,8 @@ angular.module('myApp.view1', ['ngRoute'])
           let leagues = response.data
           console.log('leagues: ', leagues)
           refreshLastSeasonOfAllLeaguesInDatabase(leagues)
-          ctrl.isRefreshLoading = false
         })
     }
-
 
     ctrl.refreshAllDatabase = function () {
       $http.get('/api/refreshAllDatabase', {

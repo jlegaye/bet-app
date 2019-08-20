@@ -1,7 +1,6 @@
 <section layout="row" layout-sm="column" layout-align="center center" layout-wrap>
   <md-button class="md-raised md-warn" ng-click="refreshAllDatabase()">Refresh with all Results</md-button>
   <md-button class="md-raised md-warn" ng-click="refreshDatabase()">Refresh with last Results</md-button>
-  <md-button class="md-raised md-danger" ng-click="NEWrefreshDatabase()">NEW</md-button>
   <md-button class="md-raised md-primary" ng-click="getNextEventsToBet()">get Next Events to bet</md-button>
 </section>
 
@@ -84,9 +83,10 @@
   </md-list>
 </div>
 <div ng-show="isLoading">
+    <span>Getting next events to bet...</span>
   <md-progress-linear md-mode="determinate" value="{{progress}}"></md-progress-linear>
 </div>
-<div>P: {{refreshProgress}}</div>
 <div ng-show="isRefreshLoading">
+  <span>Refreshing database...</span>
   <md-progress-linear md-mode="determinate" value="{{refreshProgress}}"></md-progress-linear>
 </div>
