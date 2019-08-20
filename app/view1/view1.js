@@ -2,14 +2,14 @@
 
 angular.module('myApp.view1', ['ngRoute'])
 
-  .config(['$routeProvider', function($routeProvider) {
+  .config(['$routeProvider', function ($routeProvider) {
     $routeProvider.when('/view1', {
       templateUrl: 'view1/view1.html',
       controller: 'View1Ctrl'
     });
   }])
 
-  .controller('View1Ctrl', ['$scope', '$http', '$q', function($scope, $http, $q) {
+  .controller('View1Ctrl', ['$scope', '$http', '$q', function ($scope, $http, $q) {
 
     let uniqEs6 = (arrArg) => {
       return arrArg.filter((elem, pos, arr) => {
@@ -24,7 +24,7 @@ angular.module('myApp.view1', ['ngRoute'])
     ctrl.isLoading = false
     ctrl.isRefreshLoading = false
 
-    let mustBetCriteria = function(finishedMatches, criteria, methodName) {
+    let mustBetCriteria = function (finishedMatches, criteria, methodName) {
       if (finishedMatches.length < 20) {
         return {
           mustBet: false
@@ -78,7 +78,7 @@ angular.module('myApp.view1', ['ngRoute'])
     }
 
 
-    ctrl.getNextEventsToBet = function() {
+    ctrl.getNextEventsToBet = function () {
       ctrl.isLoading = true
 
       $http.get('/api/teams')
@@ -90,10 +90,10 @@ angular.module('myApp.view1', ['ngRoute'])
 
             return $http.get('/api/finishedMatches', {
 
-                params: {
-                  team: team
-                }
-              })
+              params: {
+                team: team
+              }
+            })
               .then(response => {
                 let finishedMatches = response.data
                 // console.log('finishedMatches.length: ' + finishedMatches.length)
@@ -126,10 +126,10 @@ angular.module('myApp.view1', ['ngRoute'])
 
 
                       return $http.get('/api/nextEvent', {
-                          params: {
-                            team: team
-                          }
-                        })
+                        params: {
+                          team: team
+                        }
+                      })
                         .then(response => {
                           let nextEvent = response.data
 
@@ -198,7 +198,7 @@ angular.module('myApp.view1', ['ngRoute'])
               let allNextFilteredSortedEventsToBet = allNextEventsToBet.filter(value => Object.keys(value).length !== 0).sort(olderFirst);
 
               // console.log(allNextFilteredSortedEventsToBet)
-              $scope.$apply(function() {
+              $scope.$apply(function () {
                 ctrl.isLoading = false
                 ctrl.nextEventsToBet = allNextFilteredSortedEventsToBet
               });
@@ -213,6 +213,7 @@ angular.module('myApp.view1', ['ngRoute'])
 
 
     }
+
     let olderFirst = (a, b) => (a.nextMatch.date > b.nextMatch.date) ? 1 : ((b.nextMatch.date > a.nextMatch.date) ? -1 : 0)
 
     ctrl.moreThan1_5GoalFilter = true
@@ -224,7 +225,7 @@ angular.module('myApp.view1', ['ngRoute'])
     ctrl.leagueGroupBy = false
 
     ctrl.methodsToFilter = []
-    ctrl.methodsFilter = function(event) {
+    ctrl.methodsFilter = function (event) {
       let methodList = event.mustBetObj.filter(met => met.mustBet).map(met => met.methodName)
       let moreThan1_5GoalTest = ctrl.moreThan1_5GoalFilter && methodList.includes('moreThan1_5Goal')
       let secondHalfBetterTest = ctrl.secondHalfBetterFilter && methodList.includes('secondHalfBetter')
@@ -237,24 +238,24 @@ angular.module('myApp.view1', ['ngRoute'])
       }
     }
 
-    ctrl.updateDateGroupByCheckBoxes = function() {
+    ctrl.updateDateGroupByCheckBoxes = function () {
       if (ctrl.countryLeagueGroupBy) {
         ctrl.dateGroupBy = false
       }
     }
 
-    ctrl.updateCountryGroupByCheckBoxes = function() {
+    ctrl.updateCountryGroupByCheckBoxes = function () {
       if (ctrl.dateGroupBy) {
         ctrl.countryLeagueGroupBy = false
       }
     }
 
-    ctrl.toCountryAndLeague = function(event) {
+    ctrl.toCountryAndLeague = function (event) {
       event.countryAndLeague = event.country + ' (' + event.league + ')'
       return event
     }
 
-    ctrl.toDay = function(event) {
+    ctrl.toDay = function (event) {
       let options = {
         weekday: 'long',
         year: 'numeric',
@@ -265,33 +266,33 @@ angular.module('myApp.view1', ['ngRoute'])
       return event
     }
 
-    ctrl.refreshDatabase = function() {
+    ctrl.refreshDatabase = function () {
       $http.get('/api/refreshDatabase', {
-          timeout: 1000000
-        })
-        .then(function(response) {
+        timeout: 1000000
+      })
+        .then(function (response) {
           // console.log(response)
           // console.log('last Results refreshed')
           $http.get('/api/refreshBets', {
-              timeout: 1000000
-            })
-            .then(function(response) {
+            timeout: 1000000
+          })
+            .then(function (response) {
               console.log('bet refreshed')
             })
 
         })
-        .catch(function(data) {
+        .catch(function (data) {
           console.log('Error: ');
           console.log(data);
         });
 
     }
 
-    function allWithProgress(promises, progress) {
+    let allWithProgress = function (promises, progress) {
       var total = promises.length;
       var now = 0;
-      promises.forEach(function(p) {
-        p.then(function() {
+      promises.forEach(function (p) {
+        p.then(function () {
           now++;
           progress(now / total);
         });
@@ -302,25 +303,25 @@ angular.module('myApp.view1', ['ngRoute'])
     ctrl.progress = 0
     ctrl.refreshProgress = 0
 
-    let refreshLastSeasonOfLeagueInDatabase = function(league) {
+    let refreshLastSeasonOfLeagueInDatabase = function (league) {
       return $http.get('/api/refreshLeagueDatabase', {
-          timeout: 1000000,
-          params: {
-            country: league.country,
-            league: league.league
-          }
-        })
-        .then(function(response) {
+        timeout: 1000000,
+        params: {
+          country: league.country,
+          league: league.league
+        }
+      })
+        .then(function (response) {
           console.log(response.data.message)
 
         })
-        .catch(function(data) {
+        .catch(function (data) {
           console.log('Error: ');
           console.log(data);
         });
     }
 
-    let refreshLastSeasonOfAllLeaguesInDatabase = function(leagues) {
+    let refreshLastSeasonOfAllLeaguesInDatabase = function (leagues) {
       let p = Promise.resolve(); // Q() in q
 
       leagues.forEach((league, i) =>
@@ -332,12 +333,12 @@ angular.module('myApp.view1', ['ngRoute'])
       return p
     }
 
-    ctrl.NEWrefreshDatabase = function() {
+    ctrl.NEWrefreshDatabase = function () {
       ctrl.isRefreshLoading = true
       $http.get('/api/leagues', {
-          timeout: 1000000
-        })
-        .then(function(response) {
+        timeout: 1000000
+      })
+        .then(function (response) {
           let leagues = response.data
           console.log('leagues: ', leagues)
           refreshLastSeasonOfAllLeaguesInDatabase(leagues)
@@ -346,22 +347,22 @@ angular.module('myApp.view1', ['ngRoute'])
     }
 
 
-    ctrl.refreshAllDatabase = function() {
+    ctrl.refreshAllDatabase = function () {
       $http.get('/api/refreshAllDatabase', {
-          timeout: 1000000
-        })
-        .then(function(response) {
+        timeout: 1000000
+      })
+        .then(function (response) {
           console.log(response)
 
         })
-        .catch(function(data) {
+        .catch(function (data) {
           console.log('Error: ');
           console.log(data);
         });
 
     }
 
-    ctrl.addBet = function(event, methodName) {
+    ctrl.addBet = function (event, methodName) {
       console.log('add bet')
       let betId = event._id + '_' + event.team.replace(/ /g, '_') + '_' + methodName
       console.log('betId: ', betId)
@@ -375,18 +376,18 @@ angular.module('myApp.view1', ['ngRoute'])
       }
 
       $http.get('/api/addBet', {
-          timeout: 1000000,
-          params: {
-            bet: bet
-          }
-        })
-        .then(function(response) {
+        timeout: 1000000,
+        params: {
+          bet: bet
+        }
+      })
+        .then(function (response) {
           console.log('done')
           event.disabled = true
         })
     }
 
-    ctrl.isEventAlreadyBet = function(eventId, betTeam, methodName) {
+    ctrl.isEventAlreadyBet = function (eventId, betTeam, methodName) {
       // console.log('eventId: ', eventId)
       // console.log('methodName: ', methodName)
       let isAlreadyBet = false
@@ -394,13 +395,13 @@ angular.module('myApp.view1', ['ngRoute'])
       // console.log('betId: ', betId)
 
       return $http.get('/api/alreadyBet', {
-          timeout: 1000000,
-          params: {
-            id: betId
+        timeout: 1000000,
+        params: {
+          id: betId
 
-          }
-        })
-        .then(function(response) {
+        }
+      })
+        .then(function (response) {
 
           // console.log('response.data !!!!!!')
           // console.log(response.data)
@@ -409,7 +410,7 @@ angular.module('myApp.view1', ['ngRoute'])
             alreadyBet: response.data.found
           }
         })
-        .catch(function(data) {
+        .catch(function (data) {
           console.log('Error: ');
           return {
 
@@ -419,19 +420,19 @@ angular.module('myApp.view1', ['ngRoute'])
 
     }
 
-    ctrl.getLevel = function(betTeam, methodName) {
+    ctrl.getLevel = function (betTeam, methodName) {
       // console.log('betTeam: ', betTeam)
       // console.log('methodName: ', methodName)
       let level = 0
 
       return $http.get('/api/finishedBets', {
-          timeout: 1000000,
-          params: {
-            betTeam: betTeam,
-            methodName: methodName
-          }
-        })
-        .then(function(response) {
+        timeout: 1000000,
+        params: {
+          betTeam: betTeam,
+          methodName: methodName
+        }
+      })
+        .then(function (response) {
           // console.log('done')
           let finishedBets = response.data
           if (finishedBets.length > 0) {
@@ -451,7 +452,7 @@ angular.module('myApp.view1', ['ngRoute'])
             level: level
           };
         })
-        .catch(function(data) {
+        .catch(function (data) {
           console.log('Error: ');
           console.log(data);
 
