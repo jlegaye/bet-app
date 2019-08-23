@@ -303,7 +303,15 @@ angular.module('myApp.view1', ['ngRoute'])
 
         }).finally(() => {
           if (finished) {
-            ctrl.isRefreshLoading = false
+            console.log('Refreshing bets!')
+            $http.get('/api/refreshBets', {
+              timeout: 1000000
+            })
+              .then(function (response) {
+                ctrl.isRefreshLoading = false
+                console.log('bets refreshed!')
+              })
+            
           }
         })
     }
@@ -332,13 +340,6 @@ angular.module('myApp.view1', ['ngRoute'])
           let leagues = response.data
           console.log('leagues: ', leagues)
           refreshLastSeasonOfAllLeaguesInDatabase(leagues)
-          console.log('Refreshing bets!')
-          $http.get('/api/refreshBets', {
-            timeout: 1000000
-          })
-            .then(function (response) {
-              console.log('bets refreshed!')
-            })
         })
     }
 
