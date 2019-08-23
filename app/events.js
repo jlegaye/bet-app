@@ -148,10 +148,10 @@ const leagues = [{
     country: 'KAZAKHSTAN',
     league: 'PREMIER LEAGUE',
     seasonOffset: true
-  }, {
+  }/*, {
     country: 'KOSOVO',
     league: 'SUPERLIGA'
-  }, {
+  }*/, {
     country: 'LATVIA',
     league: 'VIRSLIGA',
     seasonOffset: true
