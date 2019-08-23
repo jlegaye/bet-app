@@ -30,6 +30,14 @@
   </md-checkbox>
 
 </div>
+<div ng-show="isLoading">
+  <span>Getting next events to bet...</span>
+<md-progress-linear md-mode="determinate" value="{{progress}}"></md-progress-linear>
+</div>
+<div ng-show="isRefreshLoading">
+<span>Refreshing database...</span>
+<md-progress-linear md-mode="determinate" value="{{refreshProgress}}"></md-progress-linear>
+</div>
 <h1>Results found: {{(nextEventsToBet | filter:methodsFilter).length}}</h1>
 <div ng-show="!isLoading">
   <md-list class="md-dense" flex>
@@ -41,7 +49,7 @@
                 class="awayTeam">{{eventToBet.nextMatch.awayTeam}}</span></h2>
         <h3 ng-repeat="method in eventToBet.mustBetObj">
           <span>{{method.methodName}} </span>I: <span style="color:blue">{{method.iteration}}</span> LVL: <span style="color:red">{{method.level}}</span>
-          <md-button ng-disabled="eventToBet.disabled" ng-show="!method.alreadyBet" class="md-raised md-primary" ng-click="addBet(eventToBet, method.methodName)">add bet</md-button>
+          <md-button ng-disabled="method.disabled" ng-show="!method.alreadyBet" class="md-raised md-primary" ng-click="addBet(eventToBet, method)">add bet</md-button>
         </h3>
         <h3>Number of matches calculated: <span style="color:blue">{{eventToBet.nbFinishedMatches}}</span></h3>
       </div>
@@ -57,7 +65,7 @@
                   class="awayTeam">{{eventToBet.nextMatch.awayTeam}}</span></h2>
           <h3 ng-repeat="method in eventToBet.mustBetObj">
             <span>{{method.methodName}} </span>I: <span style="color:blue">{{method.iteration}}</span> LVL: <span style="color:red">{{method.level}}</span>
-            <md-button ng-disabled="eventToBet.disabled" ng-show="!method.alreadyBet" class="md-raised md-primary" ng-click="addBet(eventToBet, method.methodName)">add bet</md-button>
+            <md-button ng-disabled="method.disabled" ng-show="!method.alreadyBet" class="md-raised md-primary" ng-click="addBet(eventToBet, method)">add bet</md-button>
           </h3>
           <h3>Number of matches calculated: <span style="color:blue">{{eventToBet.nbFinishedMatches}}</span></h3>
         </div>
@@ -74,7 +82,7 @@
                   class="awayTeam">{{eventToBet.nextMatch.awayTeam}}</span></h2>
           <h3 ng-repeat="method in eventToBet.mustBetObj">
             <span>{{method.methodName}} </span>I: <span style="color:blue">{{method.iteration}}</span> LVL: <span style="color:red">{{method.level}}</span>
-            <md-button ng-disabled="eventToBet.disabled" ng-show="!method.alreadyBet" class="md-raised md-primary" ng-click="addBet(eventToBet, method.methodName)">add bet</md-button>
+            <md-button ng-disabled="method.disabled" ng-show="!method.alreadyBet" class="md-raised md-primary" ng-click="addBet(eventToBet, method)">add bet</md-button>
           </h3>
           <h3>Number of matches calculated: <span style="color:blue">{{eventToBet.nbFinishedMatches}}</span></h3>
         </div>
@@ -82,11 +90,4 @@
     </md-list-item>
   </md-list>
 </div>
-<div ng-show="isLoading">
-    <span>Getting next events to bet...</span>
-  <md-progress-linear md-mode="determinate" value="{{progress}}"></md-progress-linear>
-</div>
-<div ng-show="isRefreshLoading">
-  <span>Refreshing database...</span>
-  <md-progress-linear md-mode="determinate" value="{{refreshProgress}}"></md-progress-linear>
-</div>
+

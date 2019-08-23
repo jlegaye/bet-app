@@ -299,10 +299,10 @@ angular.module('myApp.view1', ['ngRoute'])
           console.log('Error: ');
           console.log(data);
           callback(progress)
-          
-          
+
+
         }).finally(() => {
-          if(finished) {
+          if (finished) {
             ctrl.isRefreshLoading = false
           }
         })
@@ -332,6 +332,13 @@ angular.module('myApp.view1', ['ngRoute'])
           let leagues = response.data
           console.log('leagues: ', leagues)
           refreshLastSeasonOfAllLeaguesInDatabase(leagues)
+          console.log('Refreshing bets!')
+          $http.get('/api/refreshBets', {
+            timeout: 1000000
+          })
+            .then(function (response) {
+              console.log('bets refreshed!')
+            })
         })
     }
 
@@ -350,7 +357,8 @@ angular.module('myApp.view1', ['ngRoute'])
 
     }
 
-    ctrl.addBet = function (event, methodName) {
+    ctrl.addBet = function (event, method) {
+      let methodName = method.methodName
       console.log('add bet')
       let betId = event._id + '_' + event.team.replace(/ /g, '_') + '_' + methodName
       console.log('betId: ', betId)
@@ -371,7 +379,7 @@ angular.module('myApp.view1', ['ngRoute'])
       })
         .then(function (response) {
           console.log('done')
-          event.disabled = true
+          method.disabled = true
         })
     }
 

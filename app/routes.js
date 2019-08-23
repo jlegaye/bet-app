@@ -124,7 +124,7 @@ module.exports = function(app) {
         updateEventsInDatabase(result)
 
         res.json({
-          message: country + ' ' + league + ' updated !'
+          message: country + ' ' + league + ' updated!'
         })
 
       })
