@@ -1,12 +1,13 @@
 const util = require('util')
 const bet = require('./bet')
 const events = require('./events')
+const winamax = require('./winamax')
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 //URL de notre base
 const urlmongo = "mongodb+srv://admin:zZ01X0J95wewjfWL@cluster0-cfjcc.mongodb.net/bet-app2?retryWrites=true&w=majority";
 
-module.exports = function(app) {
+module.exports = function (app) {
 
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({
@@ -23,7 +24,7 @@ module.exports = function(app) {
 
   db.on('error', console.error.bind(console, 'connection error:'));
 
-  db.once('open', function() {
+  db.once('open', function () {
     console.log("Connection Successful!");
   })
 
@@ -59,8 +60,8 @@ module.exports = function(app) {
     secondHalfBetter: Boolean,
     twoOrThreeGoals: Boolean
   }, {
-    _id: false
-  });
+      _id: false
+    })
 
   var BetSchema = mongoose.Schema({
     _id: String,
@@ -70,12 +71,38 @@ module.exports = function(app) {
     idEvent: String,
     method: String
   }, {
-    _id: false
-  });
+      _id: false
+    })
+
+  var WinamaxBetSchema = mongoose.Schema({
+    _id: String,
+    type: String,
+    status: String,
+    betTime: Date,
+    betResultTime: Date,
+    mise: mongoose.Types.Decimal128,
+    odds: mongoose.Types.Decimal128,
+    result: mongoose.Types.Decimal128,
+    betTechnique: String,
+    events: [{
+      sport: String,
+      eventName: String,
+      eventResult: String,
+      eventTime: Date,
+      eventHome: String,
+      eventAway: String,
+      betDesc: String,
+      betTechnque: String,
+      betOdds: mongoose.Types.Decimal128
+    }]
+  }, {
+      _id: false
+    })
 
   // compile schema to model
-  var Event = mongoose.model('Event', EventSchema, 'events');
-  var Bet = mongoose.model('Bet', BetSchema, 'bets');
+  var Event = mongoose.model('Event', EventSchema, 'events')
+  var Bet = mongoose.model('Bet', BetSchema, 'bets')
+  var WinamaxBet = mongoose.model('WinamaxBet', WinamaxBetSchema, 'winamaxBets')
 
   // let updateEventsInDatabase = function(events) {
   //   let p = Promise.resolve(); // Q() in q
@@ -96,10 +123,10 @@ module.exports = function(app) {
   //   return p
   // }
 
-  var updateEvent = function(ev) {
+  var updateEvent = function (ev) {
     Event.findByIdAndUpdate(ev['_id'], ev, {
       upsert: true
-    }, function(err, docs) {
+    }, function (err, docs) {
       if (err) {
         return console.error(err);
       } else {
@@ -107,14 +134,14 @@ module.exports = function(app) {
       }
     })
   }
-  var updateEventsInDatabase = function(events) {
+  var updateEventsInDatabase = function (events) {
     var p = Promise.resolve(); // Q() in q
 
-    events.forEach(ev => { return p = p.then(() => updateEvent(ev))})
+    events.forEach(ev => { return p = p.then(() => updateEvent(ev)) })
     return p
   };
 
-  app.get('/api/refreshLeagueDatabase', function(req, res) {
+  app.get('/api/refreshLeagueDatabase', function (req, res) {
     let country = req.query.country
     let league = req.query.league
     return events.getAllLastEventsByCountryAndLeague(req.query.country, req.query.league)
@@ -132,12 +159,12 @@ module.exports = function(app) {
 
   })
 
-  app.get('/api/addBet', function(req, res) {
+  app.get('/api/addBet', function (req, res) {
     let bet = JSON.parse(req.query.bet)
 
     Bet.findByIdAndUpdate(bet['_id'], bet, {
       upsert: true
-    }, function(err, docs) {
+    }, function (err, docs) {
       if (err) {
         return console.error(err);
       } else {
@@ -150,7 +177,7 @@ module.exports = function(app) {
 
   })
 
-  app.get('/api/finishedBets', function(req, res) {
+  app.get('/api/finishedBets', function (req, res) {
     let queryToExtractFinishedBets = Bet.find({
       $and: [{
         betTeam: {
@@ -177,7 +204,7 @@ module.exports = function(app) {
     })
   })
 
-  app.get('/api/alreadyBet', function(req, res) {
+  app.get('/api/alreadyBet', function (req, res) {
     let betId = req.query.id
     let queryToExtractAlreadyBet = Bet.findOne({
 
@@ -202,7 +229,39 @@ module.exports = function(app) {
 
   })
 
-  app.get('/api/refreshBets', function(req, res) {
+  app.get('/api/refreshWinamaxBets', function (req, res) {
+    winamax.getAllWinamaxBets()
+      .then((winamaxBets) => {
+        
+        let promisesWinamaxBets = winamaxBets.map(winamaxBet => {
+
+  
+          WinamaxBet.findByIdAndUpdate(winamaxBet['_id'], winamaxBet, {
+            upsert: true
+          }, function (err, docs) {
+            if (err) {
+              return console.error(err);
+            } else {
+              console.log('Winamax bet (' + winamaxBet['_id'] + ') inserted to Collection');
+              
+            }
+          });
+  
+  
+        })
+  
+        Promise.all(promisesWinamaxBets)
+          .then(function (allNextEventsToBet) {
+  
+            res.status(200).send('all winamax updated in database!');
+          })
+
+
+      });
+
+  })
+
+  app.get('/api/refreshBets', function (req, res) {
 
 
     let queryToExtractWaitingBets = Bet.find({
@@ -243,7 +302,7 @@ module.exports = function(app) {
             waitingBet.status = newBetStatus
             return Bet.findByIdAndUpdate(waitingBet['_id'], waitingBet, {
               upsert: true
-            }, function(err, docs) {
+            }, function (err, docs) {
               if (err) {
                 return console.error(err);
               } else {
@@ -267,7 +326,7 @@ module.exports = function(app) {
       })
 
       Promise.all(promisesWaitingBets)
-        .then(function(allNextEventsToBet) {
+        .then(function (allNextEventsToBet) {
 
           res.json({
             'ok': 'ok'
@@ -279,7 +338,7 @@ module.exports = function(app) {
 
   })
 
-  app.get('/api/refreshDatabase', function(req, res) {
+  app.get('/api/refreshDatabase', function (req, res) {
 
     events.getAllLastSeasonEvents()
       // events.getAllEvents()
@@ -289,7 +348,7 @@ module.exports = function(app) {
         for (var event of result) {
           Event.findByIdAndUpdate(event['_id'], event, {
             upsert: true
-          }, function(err, docs) {
+          }, function (err, docs) {
             if (err) {
               return console.error(err);
             } else {
@@ -305,11 +364,11 @@ module.exports = function(app) {
     })
   })
 
-  app.get('/api/leagues', function(req, res) {
+  app.get('/api/leagues', function (req, res) {
     res.json(events.leagues)
   })
 
-  app.get('/api/refreshAllDatabase', function(req, res) {
+  app.get('/api/refreshAllDatabase', function (req, res) {
 
     // events.getAllLastSeasonEvents()
     events.getAllEvents()
@@ -320,7 +379,7 @@ module.exports = function(app) {
           if (event !== undefined) {
             Event.findByIdAndUpdate(event['_id'], event, {
               upsert: true
-            }, function(err, docs) {
+            }, function (err, docs) {
               if (err) {
                 return console.error(err);
               } else {
@@ -338,7 +397,7 @@ module.exports = function(app) {
     })
   })
 
-  app.get('/api/nextEvent', function(req, res) {
+  app.get('/api/nextEvent', function (req, res) {
     let queryToExtractNextEvent = Event.findOne({
       $and: [{
         status: {
@@ -361,7 +420,7 @@ module.exports = function(app) {
     })
   })
 
-  app.get('/api/finishedMatches', function(req, res) {
+  app.get('/api/finishedMatches', function (req, res) {
     let queryToExtractTeams = Event.find({
       $and: [{
         status: {
@@ -376,35 +435,35 @@ module.exports = function(app) {
       }]
 
     }, {
-      date: 1,
-      secondHalfBetter: 1,
-      fullTimeGoals: 1,
-      twoOrThreeGoals: 1,
-      halfTime1NoGoal: 1
-    }).sort({
-      date: 'desc'
-    })
+        date: 1,
+        secondHalfBetter: 1,
+        fullTimeGoals: 1,
+        twoOrThreeGoals: 1,
+        halfTime1NoGoal: 1
+      }).sort({
+        date: 'desc'
+      })
     let promiseQueryToExtractTeams = queryToExtractTeams.exec()
     promiseQueryToExtractTeams.then(teams => {
       res.json(teams)
     })
   })
 
-  app.get('/api/teams', function(req, res) {
+  app.get('/api/teams', function (req, res) {
     let queryToExtractTeams = Event.find({
       status: {
         $eq: 'SCH'
       }
     }, {
-      homeTeam: 1
-    }).distinct('homeTeam')
+        homeTeam: 1
+      }).distinct('homeTeam')
     let promiseQueryToExtractTeams = queryToExtractTeams.exec()
     promiseQueryToExtractTeams.then(teams => {
       res.json(teams)
     })
   })
 
-  app.get('/api/nextEventsToBet', function(req, res) {
+  app.get('/api/nextEventsToBet', function (req, res) {
 
 
     // let teams = Event.collection.distinct('homeTeam')
@@ -414,8 +473,8 @@ module.exports = function(app) {
         $eq: 'SCH'
       }
     }, {
-      homeTeam: 1
-    }).distinct('homeTeam')
+        homeTeam: 1
+      }).distinct('homeTeam')
     let promiseQueryToExtractTeams = queryToExtractTeams.exec()
     promiseQueryToExtractTeams.then(teams => {
       // Event.collection.distinct('homeTeam').then(teams => {
@@ -435,14 +494,14 @@ module.exports = function(app) {
           }]
 
         }, {
-          date: 1,
-          secondHalfBetter: 1,
-          fullTimeGoals: 1,
-          twoOrThreeGoals: 1,
-          halfTime1NoGoal: 1
-        }).sort({
-          date: 'desc'
-        })
+            date: 1,
+            secondHalfBetter: 1,
+            fullTimeGoals: 1,
+            twoOrThreeGoals: 1,
+            halfTime1NoGoal: 1
+          }).sort({
+            date: 'desc'
+          })
         var promiseQueryToExtractAllFinishedMatches = queryToExtractAllFinishedMatches.exec();
 
         return promiseQueryToExtractAllFinishedMatches.then(finishedMatches => {
@@ -696,16 +755,16 @@ module.exports = function(app) {
                 }]
 
               }, {
-                date: 1,
-                country: 1,
-                league: 1,
-                round: 1,
-                nbOfRounds: 1,
-                homeTeam: 1,
-                awayTeam: 1
-              }).sort({
-                date: 'asc'
-              })
+                  date: 1,
+                  country: 1,
+                  league: 1,
+                  round: 1,
+                  nbOfRounds: 1,
+                  homeTeam: 1,
+                  awayTeam: 1
+                }).sort({
+                  date: 'asc'
+                })
               let promiseQueryToExtractNextEvent = queryToExtractNextEvent.exec()
               return promiseQueryToExtractNextEvent.then(firstNonFinishedMatch => {
 
@@ -737,7 +796,7 @@ module.exports = function(app) {
       })
 
       Promise.all(promisesToAllTeams)
-        .then(function(allNextEventsToBet) {
+        .then(function (allNextEventsToBet) {
 
           let allNextFilteredSortedEventsToBet = allNextEventsToBet.filter(value => Object.keys(value).length !== 0).sort(olderFirst);
           res.json(allNextFilteredSortedEventsToBet)
@@ -747,21 +806,21 @@ module.exports = function(app) {
 
   })
 
-  app.get('/api/lastSeasonMatches', function(req, res) {
+  app.get('/api/lastSeasonMatches', function (req, res) {
     let queryToExtractLastFinishedMatches = Event.find({
-        $and: [{
-          status: {
-            $eq: 'FIN'
-          }
-        }, {
-          $and: [{
-            country: req.query.country
-          }, {
-            league: req.query.league
-          }]
-        }]
-
+      $and: [{
+        status: {
+          $eq: 'FIN'
+        }
       }, {
+        $and: [{
+          country: req.query.country
+        }, {
+          league: req.query.league
+        }]
+      }]
+
+    }, {
         _id: 1,
         date: 1,
         homeTeam: 1,
@@ -770,9 +829,9 @@ module.exports = function(app) {
         league: 1
       })
       .
-    limit(25).sort({
-      date: 'desc'
-    })
+      limit(25).sort({
+        date: 'desc'
+      })
     let promiseQueryToExtractLastFinishedMatches = queryToExtractLastFinishedMatches.exec()
     promiseQueryToExtractLastFinishedMatches.then(finishedMatches => {
       res.json(finishedMatches)
@@ -780,7 +839,7 @@ module.exports = function(app) {
   });
 
   // application -------------------------------------------------------------
-  app.get('*', function(req, res) {
+  app.get('*', function (req, res) {
     res.sendfile('./index.html'); // load the single view file (angular will handle the page changes on the front-end)
   });
 

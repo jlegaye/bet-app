@@ -103,7 +103,19 @@ angular.module('myApp.view2', ['ngRoute'])
           timeout: 1000000
         })
         .then(function(response) {
-          console.log('done')
+          console.log('bets refreshed!')
+        })
+    }
+
+    ctrl.refreshWinamaxBets = function() {
+      console.log('refreshWinamaxBets')
+
+      $http.get('/api/refreshWinamaxBets', {
+          timeout: 1000000
+        })
+        .then(function(response) {
+          console.log(response)
+          // console.log('winamax bets refreshed!')
         })
     }
 
