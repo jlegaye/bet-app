@@ -4,6 +4,9 @@
   <md-button class="md-raised md-warn" ng-click="refreshWinamaxBets()">refresh winamax bets</md-button>
 </section>
 
+<div ng-show="isRefreshWinamaxLoading">
+  <span>Refreshing winamax database...</span>
+  </div>
 
 <div ng-show="!isLoading">
   <md-list class="md-dense" flex>

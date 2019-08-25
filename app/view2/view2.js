@@ -14,6 +14,8 @@ angular.module('myApp.view2', ['ngRoute'])
 
     var ctrl = $scope;
 
+    ctrl.isRefreshWinamaxLoading = false
+
     ctrl.toCountryAndLeague = function(event) {
       event.countryAndLeague = event.country + ' (' + event.league + ')'
       return event
@@ -109,12 +111,13 @@ angular.module('myApp.view2', ['ngRoute'])
 
     ctrl.refreshWinamaxBets = function() {
       console.log('refreshWinamaxBets')
-
+      ctrl.isRefreshWinamaxLoading = true
       $http.get('/api/refreshWinamaxBets', {
           timeout: 1000000
         })
         .then(function(response) {
           console.log(response)
+          ctrl.isRefreshWinamaxLoading = false
           // console.log('winamax bets refreshed!')
         })
     }
