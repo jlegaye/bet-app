@@ -19,17 +19,17 @@ const getWinamaxBets = async (browser) => {
 
   await page.waitFor('#loginbox_email')
   await page.click('#loginbox_email');
-  await page.keyboard.type(Base64.decode(winamaxCreds.login));
+  await page.keyboard.type(winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedLogin))
 
   await page.click('#loginbox_password');
-  await page.keyboard.type(Base64.decode(winamaxCreds.password));
+  await page.keyboard.type(winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedPassword))
 
   await page.click('#loginbox_birthday');
-  await page.keyboard.type(winamaxCreds.day);
+  await page.keyboard.type(winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedDay))
   await page.click('#loginbox_birthmonth');
-  await page.keyboard.type(winamaxCreds.month);
+  await page.keyboard.type(winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedMonth))
   await page.click('#loginbox_birthyear');
-  await page.keyboard.type(winamaxCreds.year);
+  await page.keyboard.type(winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedYear))
   await page.click('#login-button');
   // let buttonBarClass = '.sc-hCaUpS.eicyCN'
   let buttonBarClass = 'div > div:nth-child(1) > span > div > div.sc-jMMfwr.middle-column.dPhkCd > div > div > div:nth-child(1) > div > button:nth-child(3)'
@@ -395,10 +395,16 @@ async function getAllWinamaxBets() {
   return result
 }
 
-// getAllWinamaxBets().then((res) => {
-//   console.log(util.inspect(res, false, null, true))
-//   console.log(res.length)
-// });
+getAllWinamaxBets().then((res) => {
+  console.log(util.inspect(res, false, null, true))
+  console.log(res.length)
+});
+
+// console.log(winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedLogin))
+// console.log(winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedPassword))
+// console.log(winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedDay))
+// console.log(winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedMonth))
+// console.log(winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedYear))
 
 module.exports = {
   getAllWinamaxBets
