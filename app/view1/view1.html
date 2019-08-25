@@ -40,10 +40,10 @@
 <md-progress-linear md-mode="determinate" value="{{refreshProgress}}"></md-progress-linear>
 </div>
 <div>Results: </div>
-<div>More than 1.5 goal: {{moreThan1_5GoalBetsWon}}/{{moreThan1_5GoalBetsTotal}} ({{moreThan1_5GoalBetsPercentage}} %)</div>
-<div>2nd half better: {{secondHalfBetterBetsWon}}/{{secondHalfBetterBetsTotal}} ({{secondHalfBetterBetsPercentage}} %)</div>
-<div>2 or 3 goals: {{twoOrThreeGoalsBetsWon}}/{{twoOrThreeGoalsBetsTotal}} ({{twoOrThreeGoalsBetsPercentage}} %)</div>
-<div>Goal at halftime: {{goalAtHalfTimeBetsWon}}/{{goalAtHalfTimeBetsTotal}} ({{goalAtHalfTimeBetsPercentage}} %)</div>
+<div>More than 1.5 goal: {{moreThan1_5GoalBetsWon}}/{{moreThan1_5GoalBetsTotal}} ({{moreThan1_5GoalBetsPercentage}} %) => {{moreThan1_5GoalBetsResult}} €</div>
+<div>2nd half better: {{secondHalfBetterBetsWon}}/{{secondHalfBetterBetsTotal}} ({{secondHalfBetterBetsPercentage}} %) => {{secondHalfBetterBetsResult}} €</div>
+<div>2 or 3 goals: {{twoOrThreeGoalsBetsWon}}/{{twoOrThreeGoalsBetsTotal}} ({{twoOrThreeGoalsBetsPercentage}} %) => {{twoOrThreeGoalsBetsResult}} €</div>
+<div>Goal at halftime: {{goalAtHalfTimeBetsWon}}/{{goalAtHalfTimeBetsTotal}} ({{goalAtHalfTimeBetsPercentage}} %) => {{goalAtHalfTimeBetsResult}} €</div>
 <h1>Events to bet found: {{(nextEventsToBet | filter:methodsFilter).length}}</h1>
 <div ng-show="!isLoading">
   <md-list class="md-dense" flex>

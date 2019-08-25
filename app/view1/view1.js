@@ -475,18 +475,22 @@ angular.module('myApp.view1', ['ngRoute'])
             ctrl.moreThan1_5GoalBetsTotal = moreThan1_5GoalBets.length
             ctrl.moreThan1_5GoalBetsWon = moreThan1_5GoalBets.filter(bet => bet.status == 'GAGNÉ').length
             ctrl.moreThan1_5GoalBetsPercentage = Math.floor((ctrl.moreThan1_5GoalBetsWon / ctrl.moreThan1_5GoalBetsTotal) * 100)
+            ctrl.moreThan1_5GoalBetsResult = (moreThan1_5GoalBets.map(bet => bet.result).reduce((prev, next) => prev + next)).toFixed(2)
 
             ctrl.goalAtHalfTimeBetsTotal = goalAtHalfTimeBets.length
             ctrl.goalAtHalfTimeBetsWon = goalAtHalfTimeBets.filter(bet => bet.status == 'GAGNÉ').length
             ctrl.goalAtHalfTimeBetsPercentage = Math.floor((ctrl.goalAtHalfTimeBetsWon / ctrl.goalAtHalfTimeBetsTotal) * 100)
+            ctrl.goalAtHalfTimeBetsResult = (goalAtHalfTimeBets.map(bet => bet.result).reduce((prev, next) => prev + next)).toFixed(2)
 
             ctrl.secondHalfBetterBetsTotal = secondHalfBetterBets.length
             ctrl.secondHalfBetterBetsWon = secondHalfBetterBets.filter(bet => bet.status == 'GAGNÉ').length
             ctrl.secondHalfBetterBetsPercentage = Math.floor((ctrl.secondHalfBetterBetsWon / ctrl.secondHalfBetterBetsTotal) * 100)
+            ctrl.secondHalfBetterBetsResult = (secondHalfBetterBets.map(bet => bet.result).reduce((prev, next) => prev + next)).toFixed(2)
 
             ctrl.twoOrThreeGoalsBetsTotal = twoOrThreeGoalsBets.length
             ctrl.twoOrThreeGoalsBetsWon = twoOrThreeGoalsBets.filter(bet => bet.status == 'GAGNÉ').length
             ctrl.twoOrThreeGoalsBetsPercentage = Math.floor((ctrl.twoOrThreeGoalsBetsWon / ctrl.twoOrThreeGoalsBetsTotal) * 100)
+            ctrl.twoOrThreeGoalsBetsResult = (twoOrThreeGoalsBets.map(bet => bet.result).reduce((prev, next) => prev + next)).toFixed(2)
           // });
           return { methodWinamaxBetsLength: methodWinamaxBets.length }
         })
