@@ -472,7 +472,7 @@ angular.module('myApp.view1', ['ngRoute'])
           
           // $scope.$apply(function () {
 
-            ctrl.moreThan1_5GoalBetsTotal = moreThan1_5GoalBets.length
+            ctrl.moreThan1_5GoalBetsTotal = moreThan1_5GoalBets.length 
             ctrl.moreThan1_5GoalBetsWon = moreThan1_5GoalBets.filter(bet => bet.status == 'GAGNÉ').length
             ctrl.moreThan1_5GoalBetsPercentage = Math.floor((ctrl.moreThan1_5GoalBetsWon / ctrl.moreThan1_5GoalBetsTotal) * 100)
             ctrl.moreThan1_5GoalBetsResult = (moreThan1_5GoalBets.map(bet => bet.result).reduce((prev, next) => prev + next)).toFixed(2)
