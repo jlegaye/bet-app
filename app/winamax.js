@@ -7,7 +7,8 @@ require('events').EventEmitter.defaultMaxListeners = 50;
 // const fs = require('fs');
 
 const launchOptions = {
-  headless: true
+  headless: true,
+  args: ['--no-sandbox']
 }
 
 const getWinamaxBets = async (browser) => {
