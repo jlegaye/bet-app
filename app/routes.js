@@ -80,9 +80,9 @@ module.exports = function (app) {
     status: String,
     betTime: Date,
     betResultTime: Date,
-    mise: mongoose.Types.Decimal128,
-    odds: mongoose.Types.Decimal128,
-    result: mongoose.Types.Decimal128,
+    mise: Number,
+    odds: Number,
+    result: Number,
     betTechnique: String,
     events: [{
       sport: String,
@@ -93,7 +93,7 @@ module.exports = function (app) {
       eventAway: String,
       betDesc: String,
       betTechnque: String,
-      betOdds: mongoose.Types.Decimal128
+      betOdds: Number
     }]
   }, {
       _id: false
@@ -204,6 +204,21 @@ module.exports = function (app) {
     })
   })
 
+  app.get('/api/methodWinamaxBets', function (req, res) {
+    console.log('/api/methodWinamaxBets')
+    let queryToExtractMethodWinamaxBets = WinamaxBet.find({
+      betTechnique: {
+        $ne: ''
+      }
+    })
+    let promiseQueryToExtractMethodWinamaxBets = queryToExtractMethodWinamaxBets.exec()
+    promiseQueryToExtractMethodWinamaxBets.then(methodWinamaxBets => {
+      console.log('methodWinamaxBets')
+      console.log(methodWinamaxBets)
+      res.json(methodWinamaxBets)
+    })
+  })
+
   app.get('/api/alreadyBet', function (req, res) {
     let betId = req.query.id
     let queryToExtractAlreadyBet = Bet.findOne({
@@ -232,10 +247,10 @@ module.exports = function (app) {
   app.get('/api/refreshWinamaxBets', function (req, res) {
     winamax.getAllWinamaxBets()
       .then((winamaxBets) => {
-        
+
         let promisesWinamaxBets = winamaxBets.map(winamaxBet => {
 
-  
+
           WinamaxBet.findByIdAndUpdate(winamaxBet['_id'], winamaxBet, {
             upsert: true
           }, function (err, docs) {
@@ -243,16 +258,16 @@ module.exports = function (app) {
               return console.error(err);
             } else {
               console.log('Winamax bet (' + winamaxBet['_id'] + ') inserted to Collection');
-              
+
             }
           });
-  
-  
+
+
         })
-  
+
         Promise.all(promisesWinamaxBets)
           .then(function (allNextEventsToBet) {
-  
+
             res.status(200).send('all winamax updated in database!');
           })
 

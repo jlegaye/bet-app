@@ -1,6 +1,7 @@
 <section layout="row" layout-sm="column" layout-align="center center" layout-wrap>
   <md-button class="md-raised md-warn" ng-click="refreshAllDatabase()">Refresh with all Results</md-button>
   <md-button class="md-raised md-warn" ng-click="refreshDatabase()">Refresh with last Results</md-button>
+  <md-button class="md-raised" ng-click="getWinamaxResults()">Winamax results</md-button>
   <md-button class="md-raised md-primary" ng-click="getNextEventsToBet()">get Next Events to bet</md-button>
 </section>
 
@@ -38,7 +39,12 @@
 <span>Refreshing database...</span>
 <md-progress-linear md-mode="determinate" value="{{refreshProgress}}"></md-progress-linear>
 </div>
-<h1>Results found: {{(nextEventsToBet | filter:methodsFilter).length}}</h1>
+<div>Results: </div>
+<div>More than 1.5 goal: {{moreThan1_5GoalBetsWon}}/{{moreThan1_5GoalBetsTotal}} ({{moreThan1_5GoalBetsPercentage}} %)</div>
+<div>2nd half better: {{secondHalfBetterBetsWon}}/{{secondHalfBetterBetsTotal}} ({{secondHalfBetterBetsPercentage}} %)</div>
+<div>2 or 3 goals: {{twoOrThreeGoalsBetsWon}}/{{twoOrThreeGoalsBetsTotal}} ({{twoOrThreeGoalsBetsPercentage}} %)</div>
+<div>Goal at halftime: {{goalAtHalfTimeBetsWon}}/{{goalAtHalfTimeBetsTotal}} ({{goalAtHalfTimeBetsPercentage}} %)</div>
+<h1>Events to bet found: {{(nextEventsToBet | filter:methodsFilter).length}}</h1>
 <div ng-show="!isLoading">
   <md-list class="md-dense" flex>
     <md-list-item class="md-3-line event" ng-repeat="eventToBet in nextEventsToBet | filter:methodsFilter" ng-if="!countryLeagueGroupBy && !dateGroupBy">

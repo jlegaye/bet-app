@@ -51,7 +51,7 @@ const getWinamaxBets = async (browser) => {
   let betsInPage = []
 
   // let buttonBarClass = '.sc-jGxEUC .sc-jUpvKA:nth-child(1) .sc-cHSUfg'
-  let nbOfPages = 7
+  let nbOfPages = 8
   while (pageNumber !== nbOfPages) {
     if (pageNumber !== 1) {
       // await page.click(buttonBarClass + ' *:nth-child(3)');
@@ -395,10 +395,10 @@ async function getAllWinamaxBets() {
   return result
 }
 
-getAllWinamaxBets().then((res) => {
-  console.log(util.inspect(res, false, null, true))
-  console.log(res.length)
-});
+// getAllWinamaxBets().then((res) => {
+//   console.log(util.inspect(res, false, null, true))
+//   console.log(res.length)
+// });
 
 // console.log(winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedLogin))
 // console.log(winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedPassword))

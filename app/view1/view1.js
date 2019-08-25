@@ -311,7 +311,7 @@ angular.module('myApp.view1', ['ngRoute'])
                 ctrl.isRefreshLoading = false
                 console.log('bets refreshed!')
               })
-            
+
           }
         })
     }
@@ -455,6 +455,46 @@ angular.module('myApp.view1', ['ngRoute'])
 
         });
 
+    }
+
+    ctrl.getWinamaxResults = function () {
+      console.log('getWinamaxResults')
+      return $http.get('/api/methodWinamaxBets', {
+        timeout: 1000000
+      })
+        .then(function (response) {
+          let methodWinamaxBets = response.data
+          console.log('methodWinamaxBets: ', methodWinamaxBets)
+          let moreThan1_5GoalBets = methodWinamaxBets.filter(bet => bet.betTechnique == 'moreThan1_5Goal')
+          let goalAtHalfTimeBets = methodWinamaxBets.filter(bet => bet.betTechnique == 'goalAtHalfTime')
+          let secondHalfBetterBets = methodWinamaxBets.filter(bet => bet.betTechnique == 'secondHalfBetter')
+          let twoOrThreeGoalsBets = methodWinamaxBets.filter(bet => bet.betTechnique == 'twoOrThreeGoals')
+          
+          // $scope.$apply(function () {
+
+            ctrl.moreThan1_5GoalBetsTotal = moreThan1_5GoalBets.length
+            ctrl.moreThan1_5GoalBetsWon = moreThan1_5GoalBets.filter(bet => bet.status == 'GAGNÉ').length
+            ctrl.moreThan1_5GoalBetsPercentage = Math.floor((ctrl.moreThan1_5GoalBetsWon / ctrl.moreThan1_5GoalBetsTotal) * 100)
+
+            ctrl.goalAtHalfTimeBetsTotal = goalAtHalfTimeBets.length
+            ctrl.goalAtHalfTimeBetsWon = goalAtHalfTimeBets.filter(bet => bet.status == 'GAGNÉ').length
+            ctrl.goalAtHalfTimeBetsPercentage = Math.floor((ctrl.goalAtHalfTimeBetsWon / ctrl.goalAtHalfTimeBetsTotal) * 100)
+
+            ctrl.secondHalfBetterBetsTotal = secondHalfBetterBets.length
+            ctrl.secondHalfBetterBetsWon = secondHalfBetterBets.filter(bet => bet.status == 'GAGNÉ').length
+            ctrl.secondHalfBetterBetsPercentage = Math.floor((ctrl.secondHalfBetterBetsWon / ctrl.secondHalfBetterBetsTotal) * 100)
+
+            ctrl.twoOrThreeGoalsBetsTotal = twoOrThreeGoalsBets.length
+            ctrl.twoOrThreeGoalsBetsWon = twoOrThreeGoalsBets.filter(bet => bet.status == 'GAGNÉ').length
+            ctrl.twoOrThreeGoalsBetsPercentage = Math.floor((ctrl.twoOrThreeGoalsBetsWon / ctrl.twoOrThreeGoalsBetsTotal) * 100)
+          // });
+          return { methodWinamaxBetsLength: methodWinamaxBets.length }
+        })
+        .catch(function (data) {
+          console.log('Error: ');
+          console.log(data);
+
+        });
     }
 
   }]);
