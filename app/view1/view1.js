@@ -464,10 +464,12 @@ angular.module('myApp.view1', ['ngRoute'])
       let nbOfCurrentBets = filteredBets.filter(bet => bet.status == 'EN COURS').length
       let wonPercentage = Math.floor((nbOfWonBets / nbOfBets) * 100)
       const miseArray = filteredBets.map(bet => bet.mise)
+      const currentMiseArray = filteredBets.filter(bet => bet.status == 'EN COURS').map(bet => bet.mise)
       const oddsArray = filteredBets.map(bet => bet.odds)
       let averageMise = (miseArray.reduce((a,b) => a + b, 0) / miseArray.length).toFixed(2)
       let averageOdds = (oddsArray.reduce((a,b) => a + b, 0) / oddsArray.length).toFixed(2)
       let totalMise = (miseArray.reduce((prev, next) => prev + next)).toFixed(2)
+      let currentMise = (currentMiseArray.reduce((prev, next) => prev + next)).toFixed(2)
       let result = (filteredBets.map(bet => bet.result).reduce((prev, next) => prev + next)).toFixed(2)
       let roi = Math.floor((result / totalMise) * 100)
       return {
@@ -476,6 +478,7 @@ angular.module('myApp.view1', ['ngRoute'])
         nbOfWonBets,
         nbOfLostBets,
         nbOfCurrentBets,
+        currentMise,
         wonPercentage,
         averageOdds,
         averageMise,
