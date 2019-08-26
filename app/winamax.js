@@ -45,7 +45,7 @@ const getWinamaxBets = async (browser) => {
   await page.click('#login-button')
   // let buttonBarClass = '.sc-hCaUpS.eicyCN'
   let buttonBarClass = 'div > div:nth-child(1) > span > div > div.sc-jMMfwr.middle-column.dPhkCd > div > div > div:nth-child(1) > div > button:nth-child(3)'
-  // await page.waitFor(1000)
+  await page.waitFor(1000)
   await page.waitFor(buttonBarClass).catch(
     (err) => {
       // console.log(err)
@@ -63,15 +63,15 @@ const getWinamaxBets = async (browser) => {
   let betsInPage = []
 
   // let buttonBarClass = '.sc-jGxEUC .sc-jUpvKA:nth-child(1) .sc-cHSUfg'
-  let nbOfPages = 8
+  let nbOfPages = 4
   while (pageNumber !== nbOfPages) {
     if (pageNumber !== 1) {
       // await page.click(buttonBarClass + ' *:nth-child(3)');
       await page.click(buttonBarClass);
-      await page.waitFor(100)
+      await page.waitFor(500)
     }
     betsInPage = betsInPage.concat(await getBetsInPage(page))
-    await page.waitFor(150)
+    await page.waitFor(300)
     console.log('page: ' + pageNumber)
     pageNumber++
 
