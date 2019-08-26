@@ -19,19 +19,30 @@ const getWinamaxBets = async (browser) => {
   })
 
   await page.waitFor('#loginbox_email')
-  await page.click('#loginbox_email');
-  await page.keyboard.type(winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedLogin))
+  await page.click('#loginbox_email')
+  const decryptedLogin = winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedLogin);
+  await page.keyboard.type(decryptedLogin)
 
-  await page.click('#loginbox_password');
-  await page.keyboard.type(winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedPassword))
+  await page.click('#loginbox_password')
+  const decryptedPassword = winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedPassword);
+  await page.keyboard.type(decryptedPassword)
 
-  await page.click('#loginbox_birthday');
-  await page.keyboard.type(winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedDay))
-  await page.click('#loginbox_birthmonth');
-  await page.keyboard.type(winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedMonth))
-  await page.click('#loginbox_birthyear');
-  await page.keyboard.type(winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedYear))
-  await page.click('#login-button');
+  await page.click('#loginbox_birthday')
+  const decryptedDay = winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedDay);
+  await page.keyboard.type(decryptedDay)
+  await page.click('#loginbox_birthmonth')
+  const decryptedMonth = winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedMonth);
+  await page.keyboard.type(decryptedMonth)
+  await page.click('#loginbox_birthyear')
+  const decryptedYear = winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedYear);
+  await page.keyboard.type(decryptedYear)
+
+  console.log('decryptedLogin: ' + decryptedLogin)
+  console.log('decryptedPassword: ' + decryptedPassword)
+  console.log('decryptedDay: ' + decryptedDay)
+  console.log('decryptedMonth: ' + decryptedMonth)
+  console.log('decryptedYear: ' + decryptedYear)
+  await page.click('#login-button')
   // let buttonBarClass = '.sc-hCaUpS.eicyCN'
   let buttonBarClass = 'div > div:nth-child(1) > span > div > div.sc-jMMfwr.middle-column.dPhkCd > div > div > div:nth-child(1) > div > button:nth-child(3)'
   // await page.waitFor(1000)
