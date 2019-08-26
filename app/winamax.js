@@ -37,11 +37,11 @@ const getWinamaxBets = async (browser) => {
   const decryptedYear = winamaxCreds.cryptr.decrypt(winamaxCreds.encryptedYear);
   await page.keyboard.type(decryptedYear)
 
-  console.log('decryptedLogin: ' + decryptedLogin)
-  console.log('decryptedPassword: ' + decryptedPassword)
-  console.log('decryptedDay: ' + decryptedDay)
-  console.log('decryptedMonth: ' + decryptedMonth)
-  console.log('decryptedYear: ' + decryptedYear)
+  // console.log('decryptedLogin: ' + decryptedLogin)
+  // console.log('decryptedPassword: ' + decryptedPassword)
+  // console.log('decryptedDay: ' + decryptedDay)
+  // console.log('decryptedMonth: ' + decryptedMonth)
+  // console.log('decryptedYear: ' + decryptedYear)
   await page.click('#login-button')
   // let buttonBarClass = '.sc-hCaUpS.eicyCN'
   let buttonBarClass = 'div > div:nth-child(1) > span > div > div.sc-jMMfwr.middle-column.dPhkCd > div > div > div:nth-child(1) > div > button:nth-child(3)'
