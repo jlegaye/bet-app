@@ -469,7 +469,7 @@ angular.module('myApp.view1', ['ngRoute'])
       let averageMise = (miseArray.reduce((a,b) => a + b, 0) / miseArray.length).toFixed(2)
       let averageOdds = (oddsArray.reduce((a,b) => a + b, 0) / oddsArray.length).toFixed(2)
       let totalMise = (miseArray.reduce((prev, next) => prev + next)).toFixed(2)
-      let currentMise = (currentMiseArray.reduce((prev, next) => prev + next)).toFixed(2)
+      let currentMise = currentMiseArray.length == 0 ? 0 : (currentMiseArray.reduce((prev, next) => prev + next)).toFixed(2)
       let result = (filteredBets.map(bet => bet.result).reduce((prev, next) => prev + next)).toFixed(2)
       let roi = Math.floor((result / totalMise) * 100)
       return {
