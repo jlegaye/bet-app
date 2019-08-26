@@ -457,6 +457,39 @@ angular.module('myApp.view1', ['ngRoute'])
 
     }
 
+    let generateStatsFromBetsList = function (filteredBets, methodName) {
+      let nbOfBets = filteredBets.length
+      let nbOfWonBets = filteredBets.filter(bet => bet.status == 'GAGNÉ').length
+      let nbOfLostBets = filteredBets.filter(bet => bet.status == 'PERDU').length
+      let nbOfCurrentBets = filteredBets.filter(bet => bet.status == 'EN COURS').length
+      let wonPercentage = Math.floor((nbOfWonBets / nbOfBets) * 100)
+      const miseArray = filteredBets.map(bet => bet.mise)
+      const oddsArray = filteredBets.map(bet => bet.odds)
+      let averageMise = (miseArray.reduce((a,b) => a + b, 0) / miseArray.length).toFixed(2)
+      let averageOdds = (oddsArray.reduce((a,b) => a + b, 0) / oddsArray.length).toFixed(2)
+      let totalMise = (miseArray.reduce((prev, next) => prev + next)).toFixed(2)
+      let result = (filteredBets.map(bet => bet.result).reduce((prev, next) => prev + next)).toFixed(2)
+      let roi = Math.floor((result / totalMise) * 100)
+      return {
+        methodName,
+        nbOfBets,
+        nbOfWonBets,
+        nbOfLostBets,
+        nbOfCurrentBets,
+        wonPercentage,
+        averageOdds,
+        averageMise,
+        totalMise,
+        roi,
+        result,
+      }
+    }
+
+    let generateStats = function (methodWinamaxBets, methodName) {
+      let filteredBets = methodWinamaxBets.filter(bet => bet.betTechnique == methodName)
+      return generateStatsFromBetsList(filteredBets, methodName)
+    }
+
     ctrl.getWinamaxResults = function () {
       console.log('getWinamaxResults')
       return $http.get('/api/methodWinamaxBets', {
@@ -465,33 +498,42 @@ angular.module('myApp.view1', ['ngRoute'])
         .then(function (response) {
           let methodWinamaxBets = response.data
           console.log('methodWinamaxBets: ', methodWinamaxBets)
-          let moreThan1_5GoalBets = methodWinamaxBets.filter(bet => bet.betTechnique == 'moreThan1_5Goal')
-          let goalAtHalfTimeBets = methodWinamaxBets.filter(bet => bet.betTechnique == 'goalAtHalfTime')
-          let secondHalfBetterBets = methodWinamaxBets.filter(bet => bet.betTechnique == 'secondHalfBetter')
-          let twoOrThreeGoalsBets = methodWinamaxBets.filter(bet => bet.betTechnique == 'twoOrThreeGoals')
-          
-          // $scope.$apply(function () {
 
-            ctrl.moreThan1_5GoalBetsTotal = moreThan1_5GoalBets.length 
-            ctrl.moreThan1_5GoalBetsWon = moreThan1_5GoalBets.filter(bet => bet.status == 'GAGNÉ').length
-            ctrl.moreThan1_5GoalBetsPercentage = Math.floor((ctrl.moreThan1_5GoalBetsWon / ctrl.moreThan1_5GoalBetsTotal) * 100)
-            ctrl.moreThan1_5GoalBetsResult = (moreThan1_5GoalBets.map(bet => bet.result).reduce((prev, next) => prev + next)).toFixed(2)
+          ctrl.stats = [
+            generateStats(methodWinamaxBets, 'moreThan1_5Goal'),
+            generateStats(methodWinamaxBets, 'goalAtHalfTime'),
+            generateStats(methodWinamaxBets, 'secondHalfBetter'),
+            generateStats(methodWinamaxBets, 'twoOrThreeGoals'),
+            generateStatsFromBetsList(methodWinamaxBets, 'TOTAL'),
+          ]
 
-            ctrl.goalAtHalfTimeBetsTotal = goalAtHalfTimeBets.length
-            ctrl.goalAtHalfTimeBetsWon = goalAtHalfTimeBets.filter(bet => bet.status == 'GAGNÉ').length
-            ctrl.goalAtHalfTimeBetsPercentage = Math.floor((ctrl.goalAtHalfTimeBetsWon / ctrl.goalAtHalfTimeBetsTotal) * 100)
-            ctrl.goalAtHalfTimeBetsResult = (goalAtHalfTimeBets.map(bet => bet.result).reduce((prev, next) => prev + next)).toFixed(2)
+          console.log('ctrl.stats: ', ctrl.stats)
 
-            ctrl.secondHalfBetterBetsTotal = secondHalfBetterBets.length
-            ctrl.secondHalfBetterBetsWon = secondHalfBetterBets.filter(bet => bet.status == 'GAGNÉ').length
-            ctrl.secondHalfBetterBetsPercentage = Math.floor((ctrl.secondHalfBetterBetsWon / ctrl.secondHalfBetterBetsTotal) * 100)
-            ctrl.secondHalfBetterBetsResult = (secondHalfBetterBets.map(bet => bet.result).reduce((prev, next) => prev + next)).toFixed(2)
+          // let moreThan1_5GoalBets = methodWinamaxBets.filter(bet => bet.betTechnique == 'moreThan1_5Goal')
+          // let goalAtHalfTimeBets = methodWinamaxBets.filter(bet => bet.betTechnique == 'goalAtHalfTime')
+          // let secondHalfBetterBets = methodWinamaxBets.filter(bet => bet.betTechnique == 'secondHalfBetter')
+          // let twoOrThreeGoalsBets = methodWinamaxBets.filter(bet => bet.betTechnique == 'twoOrThreeGoals')
 
-            ctrl.twoOrThreeGoalsBetsTotal = twoOrThreeGoalsBets.length
-            ctrl.twoOrThreeGoalsBetsWon = twoOrThreeGoalsBets.filter(bet => bet.status == 'GAGNÉ').length
-            ctrl.twoOrThreeGoalsBetsPercentage = Math.floor((ctrl.twoOrThreeGoalsBetsWon / ctrl.twoOrThreeGoalsBetsTotal) * 100)
-            ctrl.twoOrThreeGoalsBetsResult = (twoOrThreeGoalsBets.map(bet => bet.result).reduce((prev, next) => prev + next)).toFixed(2)
-          // });
+
+          // ctrl.moreThan1_5GoalBetsTotal = moreThan1_5GoalBets.length
+          // ctrl.moreThan1_5GoalBetsWon = moreThan1_5GoalBets.filter(bet => bet.status == 'GAGNÉ').length
+          // ctrl.moreThan1_5GoalBetsPercentage = Math.floor((ctrl.moreThan1_5GoalBetsWon / ctrl.moreThan1_5GoalBetsTotal) * 100)
+          // ctrl.moreThan1_5GoalBetsResult = (moreThan1_5GoalBets.map(bet => bet.result).reduce((prev, next) => prev + next)).toFixed(2)
+
+          // ctrl.goalAtHalfTimeBetsTotal = goalAtHalfTimeBets.length
+          // ctrl.goalAtHalfTimeBetsWon = goalAtHalfTimeBets.filter(bet => bet.status == 'GAGNÉ').length
+          // ctrl.goalAtHalfTimeBetsPercentage = Math.floor((ctrl.goalAtHalfTimeBetsWon / ctrl.goalAtHalfTimeBetsTotal) * 100)
+          // ctrl.goalAtHalfTimeBetsResult = (goalAtHalfTimeBets.map(bet => bet.result).reduce((prev, next) => prev + next)).toFixed(2)
+
+          // ctrl.secondHalfBetterBetsTotal = secondHalfBetterBets.length
+          // ctrl.secondHalfBetterBetsWon = secondHalfBetterBets.filter(bet => bet.status == 'GAGNÉ').length
+          // ctrl.secondHalfBetterBetsPercentage = Math.floor((ctrl.secondHalfBetterBetsWon / ctrl.secondHalfBetterBetsTotal) * 100)
+          // ctrl.secondHalfBetterBetsResult = (secondHalfBetterBets.map(bet => bet.result).reduce((prev, next) => prev + next)).toFixed(2)
+
+          // ctrl.twoOrThreeGoalsBetsTotal = twoOrThreeGoalsBets.length
+          // ctrl.twoOrThreeGoalsBetsWon = twoOrThreeGoalsBets.filter(bet => bet.status == 'GAGNÉ').length
+          // ctrl.twoOrThreeGoalsBetsPercentage = Math.floor((ctrl.twoOrThreeGoalsBetsWon / ctrl.twoOrThreeGoalsBetsTotal) * 100)
+          // ctrl.twoOrThreeGoalsBetsResult = (twoOrThreeGoalsBets.map(bet => bet.result).reduce((prev, next) => prev + next)).toFixed(2)
           return { methodWinamaxBetsLength: methodWinamaxBets.length }
         })
         .catch(function (data) {

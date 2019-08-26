@@ -10,11 +10,11 @@
   <md-checkbox ng-model="moreThan1_5GoalFilter">
     More than 1.5 goal<br />
   </md-checkbox>
-  <md-checkbox ng-model="secondHalfBetterFilter">
-    Second half better<br />
-  </md-checkbox>
   <md-checkbox ng-model="goalAtHalfTimeFilter">
     Goal at halftime<br />
+  </md-checkbox>
+  <md-checkbox ng-model="secondHalfBetterFilter">
+    Second half better<br />
   </md-checkbox>
   <md-checkbox ng-model="twoOrThreeGoalsFilter">
     Two or three goals<br />
@@ -33,62 +33,110 @@
 </div>
 <div ng-show="isLoading">
   <span>Getting next events to bet...</span>
-<md-progress-linear md-mode="determinate" value="{{progress}}"></md-progress-linear>
+  <md-progress-linear md-mode="determinate" value="{{progress}}"></md-progress-linear>
 </div>
 <div ng-show="isRefreshLoading">
-<span>Refreshing database...</span>
-<md-progress-linear md-mode="determinate" value="{{refreshProgress}}"></md-progress-linear>
+  <span>Refreshing database...</span>
+  <md-progress-linear md-mode="determinate" value="{{refreshProgress}}"></md-progress-linear>
 </div>
-<div>Results: </div>
-<div>More than 1.5 goal: {{moreThan1_5GoalBetsWon}}/{{moreThan1_5GoalBetsTotal}} ({{moreThan1_5GoalBetsPercentage}} %) => {{moreThan1_5GoalBetsResult}} €</div>
-<div>2nd half better: {{secondHalfBetterBetsWon}}/{{secondHalfBetterBetsTotal}} ({{secondHalfBetterBetsPercentage}} %) => {{secondHalfBetterBetsResult}} €</div>
-<div>2 or 3 goals: {{twoOrThreeGoalsBetsWon}}/{{twoOrThreeGoalsBetsTotal}} ({{twoOrThreeGoalsBetsPercentage}} %) => {{twoOrThreeGoalsBetsResult}} €</div>
-<div>Goal at halftime: {{goalAtHalfTimeBetsWon}}/{{goalAtHalfTimeBetsTotal}} ({{goalAtHalfTimeBetsPercentage}} %) => {{goalAtHalfTimeBetsResult}} €</div>
+<h1>Results: </h1>
+<table>
+  <thead>
+    <tr>
+      <th>Method</th>
+      <th>Nb of bets</th>
+      <th>Nb of won bets</th>
+      <th>Nb of lost bets</th>
+      <th>Nb of current bets</th>
+      <th>Won percentage</th>
+      <th>Average odds</th>
+      <th>Average mise</th>
+      <th>Total mise</th>
+      <th>ROI</th>
+      <th>Result</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="stat in stats">
+      <td>{{stat.methodName}}</td>
+      <td>{{stat.nbOfBets}}</td>
+      <td>{{stat.nbOfWonBets}}</td>
+      <td>{{stat.nbOfLostBets}}</td>
+      <td>{{stat.nbOfCurrentBets}}</td>
+      <td>{{stat.wonPercentage}} %</td>
+      <td>{{stat.averageOdds}}</td>
+      <td>{{stat.averageMise}} €</td>
+      <td>{{stat.totalMise}} €</td>
+      <td>{{stat.roi}} %</td>
+      <td>{{stat.result}} €</td>
+    </tr>
+  </tbody>
+</table>
+
 <h1>Events to bet found: {{(nextEventsToBet | filter:methodsFilter).length}}</h1>
 <div ng-show="!isLoading">
   <md-list class="md-dense" flex>
-    <md-list-item class="md-3-line event" ng-repeat="eventToBet in nextEventsToBet | filter:methodsFilter" ng-if="!countryLeagueGroupBy && !dateGroupBy">
+    <md-list-item class="md-3-line event" ng-repeat="eventToBet in nextEventsToBet | filter:methodsFilter"
+      ng-if="!countryLeagueGroupBy && !dateGroupBy">
       <div class="md-list-item-text" layout="column">
-        <h2>{{eventToBet.country}} ({{eventToBet.league}}<span ng-if="eventToBet.nbOfRounds != null"> : {{eventToBet.round}}/{{eventToBet.nbOfRounds}}</span>)</h2>
+        <h2>{{eventToBet.country}} ({{eventToBet.league}}<span ng-if="eventToBet.nbOfRounds != null"> :
+            {{eventToBet.round}}/{{eventToBet.nbOfRounds}}</span>)</h2>
         <h2>{{eventToBet.nextMatch.date | date :  "EEEE, MMMM d, y HH:mm" }}</h2>
-        <h2><span ng-class="{'to-bet': eventToBet.nextMatch.homeTeam == eventToBet.team}" class="homTeam">{{eventToBet.nextMatch.homeTeam}}</span> <span class="logo-versus"><span> <span ng-class="{'to-bet': eventToBet.nextMatch.awayTeam == eventToBet.team}"
+        <h2><span ng-class="{'to-bet': eventToBet.nextMatch.homeTeam == eventToBet.team}"
+            class="homTeam">{{eventToBet.nextMatch.homeTeam}}</span> <span class="logo-versus"><span> <span
+                ng-class="{'to-bet': eventToBet.nextMatch.awayTeam == eventToBet.team}"
                 class="awayTeam">{{eventToBet.nextMatch.awayTeam}}</span></h2>
         <h3 ng-repeat="method in eventToBet.mustBetObj">
-          <span>{{method.methodName}} </span>I: <span style="color:blue">{{method.iteration}}</span> LVL: <span style="color:red">{{method.level}}</span>
-          <md-button ng-disabled="method.disabled" ng-show="!method.alreadyBet" class="md-raised md-primary" ng-click="addBet(eventToBet, method)">add bet</md-button>
+          <span>{{method.methodName}} </span>I: <span style="color:blue">{{method.iteration}}</span> LVL: <span
+            style="color:red">{{method.level}}</span>
+          <md-button ng-disabled="method.disabled" ng-show="!method.alreadyBet" class="md-raised md-primary"
+            ng-click="addBet(eventToBet, method)">add bet</md-button>
         </h3>
         <h3>Number of matches calculated: <span style="color:blue">{{eventToBet.nbFinishedMatches}}</span></h3>
       </div>
     </md-list-item>
 
-    <md-list-item class="md-3-line event" ng-repeat="(key, value) in nextEventsToBet | filter:methodsFilter | map:toCountryAndLeague | groupBy:'countryAndLeague'" ng-if="countryLeagueGroupBy">
+    <md-list-item class="md-3-line event"
+      ng-repeat="(key, value) in nextEventsToBet | filter:methodsFilter | map:toCountryAndLeague | groupBy:'countryAndLeague'"
+      ng-if="countryLeagueGroupBy">
       <div class="md-list-item-text" layout="column">
         <h1>{{key}}</h1>
         <div ng-repeat="eventToBet in value">
           <h2 ng-if="eventToBet.nbOfRounds != null">Round: {{eventToBet.round}}/{{eventToBet.nbOfRounds}}</h2>
           <h2>{{eventToBet.nextMatch.date | date :  "EEEE, MMMM d, y HH:mm" }}</h2>
-          <h2><span ng-class="{'to-bet': eventToBet.nextMatch.homeTeam == eventToBet.team}" class="homTeam">{{eventToBet.nextMatch.homeTeam}}</span> <span class="logo-versus"><span> <span ng-class="{'to-bet': eventToBet.nextMatch.awayTeam == eventToBet.team}"
+          <h2><span ng-class="{'to-bet': eventToBet.nextMatch.homeTeam == eventToBet.team}"
+              class="homTeam">{{eventToBet.nextMatch.homeTeam}}</span> <span class="logo-versus"><span> <span
+                  ng-class="{'to-bet': eventToBet.nextMatch.awayTeam == eventToBet.team}"
                   class="awayTeam">{{eventToBet.nextMatch.awayTeam}}</span></h2>
           <h3 ng-repeat="method in eventToBet.mustBetObj">
-            <span>{{method.methodName}} </span>I: <span style="color:blue">{{method.iteration}}</span> LVL: <span style="color:red">{{method.level}}</span>
-            <md-button ng-disabled="method.disabled" ng-show="!method.alreadyBet" class="md-raised md-primary" ng-click="addBet(eventToBet, method)">add bet</md-button>
+            <span>{{method.methodName}} </span>I: <span style="color:blue">{{method.iteration}}</span> LVL: <span
+              style="color:red">{{method.level}}</span>
+            <md-button ng-disabled="method.disabled" ng-show="!method.alreadyBet" class="md-raised md-primary"
+              ng-click="addBet(eventToBet, method)">add bet</md-button>
           </h3>
           <h3>Number of matches calculated: <span style="color:blue">{{eventToBet.nbFinishedMatches}}</span></h3>
         </div>
       </div>
     </md-list-item>
 
-    <md-list-item class="md-3-line event" ng-repeat="(key, value) in nextEventsToBet | filter:methodsFilter | map:toDay | groupBy:'nextMatch.day'" ng-if="dateGroupBy">
+    <md-list-item class="md-3-line event"
+      ng-repeat="(key, value) in nextEventsToBet | filter:methodsFilter | map:toDay | groupBy:'nextMatch.day'"
+      ng-if="dateGroupBy">
       <div class="md-list-item-text" layout="column">
         <h1>{{key}}</h1>
         <div ng-repeat="eventToBet in value">
-          <h2>{{eventToBet.country}} ({{eventToBet.league}}<span ng-if="eventToBet.nbOfRounds != null"> : {{eventToBet.round}}/{{eventToBet.nbOfRounds}}</span>)</h2>
+          <h2>{{eventToBet.country}} ({{eventToBet.league}}<span ng-if="eventToBet.nbOfRounds != null"> :
+              {{eventToBet.round}}/{{eventToBet.nbOfRounds}}</span>)</h2>
           <h2>{{eventToBet.nextMatch.date | date :  "HH:mm" }}</h2>
-          <h2><span ng-class="{'to-bet': eventToBet.nextMatch.homeTeam == eventToBet.team}" class="homTeam">{{eventToBet.nextMatch.homeTeam}}</span> <span class="logo-versus"><span> <span ng-class="{'to-bet': eventToBet.nextMatch.awayTeam == eventToBet.team}"
+          <h2><span ng-class="{'to-bet': eventToBet.nextMatch.homeTeam == eventToBet.team}"
+              class="homTeam">{{eventToBet.nextMatch.homeTeam}}</span> <span class="logo-versus"><span> <span
+                  ng-class="{'to-bet': eventToBet.nextMatch.awayTeam == eventToBet.team}"
                   class="awayTeam">{{eventToBet.nextMatch.awayTeam}}</span></h2>
           <h3 ng-repeat="method in eventToBet.mustBetObj">
-            <span>{{method.methodName}} </span>I: <span style="color:blue">{{method.iteration}}</span> LVL: <span style="color:red">{{method.level}}</span>
-            <md-button ng-disabled="method.disabled" ng-show="!method.alreadyBet" class="md-raised md-primary" ng-click="addBet(eventToBet, method)">add bet</md-button>
+            <span>{{method.methodName}} </span>I: <span style="color:blue">{{method.iteration}}</span> LVL: <span
+              style="color:red">{{method.level}}</span>
+            <md-button ng-disabled="method.disabled" ng-show="!method.alreadyBet" class="md-raised md-primary"
+              ng-click="addBet(eventToBet, method)">add bet</md-button>
           </h3>
           <h3>Number of matches calculated: <span style="color:blue">{{eventToBet.nbFinishedMatches}}</span></h3>
         </div>
@@ -96,4 +144,3 @@
     </md-list-item>
   </md-list>
 </div>
-
