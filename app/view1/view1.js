@@ -238,6 +238,10 @@ angular.module('myApp.view1', ['ngRoute'])
       }
     }
 
+    ctrl.flatMap = function (events) {
+      return [].concat.apply([], events)
+    }
+
     ctrl.updateDateGroupByCheckBoxes = function () {
       if (ctrl.countryLeagueGroupBy) {
         ctrl.dateGroupBy = false
@@ -264,6 +268,10 @@ angular.module('myApp.view1', ['ngRoute'])
       };
       event.nextMatch.day = new Date(event.nextMatch.date).toLocaleDateString('en', options)
       return event
+    }
+
+    ctrl.toMethodBets = function (event) {
+      return event.mustBetObj
     }
 
 
@@ -360,6 +368,7 @@ angular.module('myApp.view1', ['ngRoute'])
 
     ctrl.addBet = function (event, method) {
       let methodName = method.methodName
+      let level = method.level
       console.log('add bet')
       let betId = event._id + '_' + event.team.replace(/ /g, '_') + '_' + methodName
       console.log('betId: ', betId)
@@ -369,7 +378,8 @@ angular.module('myApp.view1', ['ngRoute'])
         betTeam: event.team,
         status: 'WAIT',
         idEvent: event._id,
-        method: methodName
+        method: methodName,
+        level: level
       }
 
       $http.get('/api/addBet', {
@@ -433,15 +443,8 @@ angular.module('myApp.view1', ['ngRoute'])
           // console.log('done')
           let finishedBets = response.data
           if (finishedBets.length > 0) {
+            level = finishedBets[0].level + 1
 
-            // console.log('finishedBets: ', finishedBets)
-            let lostList = finishedBets.map(bet => bet.status == 'LOST')
-            // console.log('lostList: ', lostList)
-            let i = 0
-            while (lostList[i] && i < lostList.length) {
-              i++
-              level++
-            }
           }
 
           return {
@@ -466,8 +469,8 @@ angular.module('myApp.view1', ['ngRoute'])
       const miseArray = filteredBets.map(bet => bet.mise)
       const currentMiseArray = filteredBets.filter(bet => bet.status == 'EN COURS').map(bet => bet.mise)
       const oddsArray = filteredBets.map(bet => bet.odds)
-      let averageMise = (miseArray.reduce((a,b) => a + b, 0) / miseArray.length).toFixed(2)
-      let averageOdds = (oddsArray.reduce((a,b) => a + b, 0) / oddsArray.length).toFixed(2)
+      let averageMise = (miseArray.reduce((a, b) => a + b, 0) / miseArray.length).toFixed(2)
+      let averageOdds = (oddsArray.reduce((a, b) => a + b, 0) / oddsArray.length).toFixed(2)
       let totalMise = (miseArray.reduce((prev, next) => prev + next)).toFixed(2)
       let currentMise = currentMiseArray.length == 0 ? 0 : (currentMiseArray.reduce((prev, next) => prev + next)).toFixed(2)
       let result = (filteredBets.map(bet => bet.result).reduce((prev, next) => prev + next)).toFixed(2)

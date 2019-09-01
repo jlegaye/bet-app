@@ -109,6 +109,18 @@ angular.module('myApp.view2', ['ngRoute'])
         })
     }
 
+    ctrl.addLevelInBets = function() {
+      
+      console.log('addLevelInBets')
+
+      $http.get('/api/addLevelInBets', {
+          timeout: 1000000
+        })
+        .then(function(response) {
+          console.log('level in bets added!')
+        })
+    }
+
     ctrl.refreshWinamaxBets = function() {
       console.log('refreshWinamaxBets')
       ctrl.isRefreshWinamaxLoading = true

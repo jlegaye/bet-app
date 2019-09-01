@@ -75,7 +75,7 @@
   </tbody>
 </table>
 
-<h1>Events to bet found: {{(nextEventsToBet | filter:methodsFilter).length}}</h1>
+<h1>Events to bet found: {{(nextEventsToBet | filter:methodsFilter).length}} (Bets: {{(nextEventsToBet | filter:methodsFilter | map:toMethodBets).flat().length}})</h1>
 <div ng-show="!isLoading">
   <md-list class="md-dense" flex>
     <md-list-item class="md-3-line event" ng-repeat="eventToBet in nextEventsToBet | filter:methodsFilter"

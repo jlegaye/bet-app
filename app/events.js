@@ -159,10 +159,10 @@ const leagues = [{
     country: 'LITHUANIA',
     league: 'A LYGA',
     seasonOffset: true
-  }, {
+  }/*, {
     country: 'LUXEMBOURG',
     league: 'NATIONAL DIVISION'
-  }, {
+  }*/, {
     country: 'MALTA',
     league: 'PREMIER LEAGUE'
   }, {

@@ -69,7 +69,8 @@ module.exports = function (app) {
     betTeam: String,
     status: String,
     idEvent: String,
-    method: String
+    method: String,
+    level: Number
   }, {
       _id: false
     })
@@ -349,6 +350,94 @@ module.exports = function (app) {
         })
 
 
+    })
+
+  })
+
+  app.get('/api/addLevelInBets', function (req, res) {
+
+
+    let queryToExtractAllBets = Bet.find()
+    let promiseQueryToExtractAllBets = queryToExtractAllBets.exec()
+    return promiseQueryToExtractAllBets.then(allBets => {
+
+      let promisesAllBets = allBets.map(bet => {
+        let id = bet._id
+        let methodName = bet.method
+        let date = bet.date
+        let betTeam = bet.betTeam
+        let status = bet.status
+        let level = 0
+
+        let queryToExtractFinishedBets = Bet.find({
+          $and: [{
+            betTeam: {
+              $eq: betTeam
+            }
+          }, {
+            date: {
+              $lt: date
+            }
+          }, {
+            method: {
+              $eq: methodName
+            }
+          }, {
+            $or: [{
+              status: 'WON'
+            }, {
+              status: 'LOST'
+            }]
+          }]
+
+        }).sort({
+          date: 'desc'
+        })
+        let promiseQueryToExtractFinishedBets = queryToExtractFinishedBets.exec()
+        promiseQueryToExtractFinishedBets.then(finishedBets => {
+
+          if (finishedBets.length > 0) {
+
+            // console.log('finishedBets: ', finishedBets)
+            let lostList = finishedBets.map(bet => bet.status == 'LOST')
+            // console.log('lostList: ', lostList)
+            let i = 0
+            while (lostList[i] && i < lostList.length) {
+              i++
+              level++
+            }
+          }
+          console.log('id: ', id)
+          console.log('status: ', status)
+          console.log('level: ', level)
+          bet.level = level
+          return Bet.findByIdAndUpdate(bet['_id'], bet, {
+            upsert: true
+          }, function (err, docs) {
+            if (err) {
+              return console.error(err);
+            } else {
+              console.log('Bet (' + bet['_id'] + ') updated to Collection with level ' + bet.level);
+
+            }
+          });
+        })
+          .catch(function (data) {
+            console.log('Error: ');
+            console.log(data);
+
+          });
+
+
+      })
+
+      Promise.all(promisesAllBets)
+        .then(function (bet) {
+
+          res.json({
+            'ok': 'ok'
+          })
+        })
     })
 
   })
@@ -853,7 +942,7 @@ module.exports = function (app) {
     })
   });
 
-  // Event.deleteMany({ country : 'KOSOVO' }, function (err) {});
+  // Event.deleteMany({ country: 'LUXEMBOURG' }, function (err) { });
 
   // application -------------------------------------------------------------
   app.get('*', function (req, res) {
