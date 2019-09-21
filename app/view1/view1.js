@@ -24,6 +24,41 @@ angular.module('myApp.view1', ['ngRoute'])
     ctrl.isLoading = false
     ctrl.isRefreshLoading = false
 
+    // sort array ascending
+    const asc = arr => arr.sort((a, b) => a - b);
+
+    const sum = arr => arr.reduce((a, b) => a + b, 0);
+
+    const mean = arr => sum(arr) / arr.length;
+
+    // sample standard deviation
+    const std = (arr) => {
+      const mu = mean(arr);
+      const diffArr = arr.map(a => (a - mu) ** 2);
+      return Math.sqrt(sum(diffArr) / (arr.length - 1));
+    };
+
+    const quantile = (arr, q) => {
+      const sorted = asc(arr);
+      const pos = ((sorted.length) - 1) * q;
+      const base = Math.floor(pos);
+      const rest = pos - base;
+      if ((sorted[base + 1] !== undefined)) {
+        return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+      } else {
+        return sorted[base];
+      }
+    };
+
+    const q25 = arr => quantile(arr, .25);
+
+    const q50 = arr => quantile(arr, .50);
+
+    const q75 = arr => quantile(arr, .75);
+    const q95 = arr => quantile(arr, .95);
+
+    const median = arr => q50(arr);
+
     let mustBetCriteria = function (finishedMatches, criteria, methodName) {
       if (finishedMatches.length < 20) {
         return {
@@ -33,19 +68,38 @@ angular.module('myApp.view1', ['ngRoute'])
         let fieldToBetList = finishedMatches.map(event => !criteria(event))
 
         let maxIteration = 0
+        let str = ''
+        let iterationMap = ''
+        let avg = ''
+        let median = ''
+        let quartile25 = ''
+        let quartile50 = ''
+        let quartile75 = ''
+        let quartile95 = ''
         if (fieldToBetList.length > 0) {
 
-          var str = fieldToBetList.map(bool => Number(bool)).join('').match(/1+/g);
+          str = fieldToBetList.map(bool => Number(bool)).join('').match(/1+/g);
 
           if (str !== null) {
-            let proc = Math.max(...(str.map(el => el.length)))
-            maxIteration = proc
+            maxIteration = Math.max(...(str.map(el => el.length)))
+            iterationMap = str.map(el => el.length)
+            let sum = iterationMap.reduce((previous, current) => current += previous);
+            avg = sum / iterationMap.length;
+            iterationMap.sort((a, b) => a - b);
+            let lowMiddle = Math.floor((iterationMap.length - 1) / 2);
+            let highMiddle = Math.ceil((iterationMap.length - 1) / 2);
+            median = (iterationMap[lowMiddle] + iterationMap[highMiddle]) / 2;
+            quartile25 = q25(iterationMap)
+            quartile50 = q50(iterationMap)
+            quartile75 = q75(iterationMap)
+            quartile95 = q95(iterationMap)
           }
         }
 
         let mustBet = true
         let i = 0
-        while (i < maxIteration && mustBet) {
+        let crit = quartile95
+        while (i < crit && mustBet) {
           if (criteria(finishedMatches[i])) {
             mustBet = false;
           }
@@ -53,8 +107,15 @@ angular.module('myApp.view1', ['ngRoute'])
         }
         return {
           methodName: methodName,
-          iteration: maxIteration,
-          mustBet: mustBet
+          maxIteration: maxIteration,
+          mustBet: mustBet,
+          iterationMap: iterationMap,
+          avg: avg,
+          median: median,
+          quartile25: quartile25,
+          quartile50: quartile50,
+          quartile75: quartile75,
+          quartile95: quartile95
         }
       }
 
@@ -99,10 +160,10 @@ angular.module('myApp.view1', ['ngRoute'])
                 // console.log('finishedMatches.length: ' + finishedMatches.length)
 
                 let mustBetObj = [
-                  mustBetCriteria(finishedMatches, secondHalfBetter, 'secondHalfBetter'),
-                  mustBetCriteria(finishedMatches, twoOrThreeGoals, 'twoOrThreeGoals'),
-                  mustBetCriteria(finishedMatches, moreThan1_5Goal, 'moreThan1_5Goal'),
-                  mustBetCriteria(finishedMatches, goalAtHalfTime, 'goalAtHalfTime')
+                  // mustBetCriteria(finishedMatches, secondHalfBetter, 'secondHalfBetter'),
+                  // mustBetCriteria(finishedMatches, twoOrThreeGoals, 'twoOrThreeGoals'),
+                  mustBetCriteria(finishedMatches, moreThan1_5Goal, 'moreThan1_5Goal')
+                  // mustBetCriteria(finishedMatches, goalAtHalfTime, 'goalAtHalfTime')
 
                 ]
                 // console.log('mustBet: ' + mustBet)

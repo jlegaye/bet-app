@@ -45,7 +45,7 @@ const getWinamaxBets = async (browser) => {
   await page.click('#login-button')
   // let buttonBarClass = '.sc-hCaUpS.eicyCN'
   let buttonBarClass = 'div > div:nth-child(1) > span > div > div.sc-jMMfwr.middle-column.dPhkCd > div > div > div:nth-child(1) > div > button:nth-child(3)'
-  await page.waitFor(1000)
+  await page.waitFor(2000)
   await page.waitFor(buttonBarClass).catch(
     (err) => {
       // console.log(err)
@@ -63,7 +63,7 @@ const getWinamaxBets = async (browser) => {
   let betsInPage = []
 
   // let buttonBarClass = '.sc-jGxEUC .sc-jUpvKA:nth-child(1) .sc-cHSUfg'
-  let nbOfPages = 4
+  let nbOfPages = 5
   while (pageNumber !== nbOfPages) {
     if (pageNumber !== 1) {
       // await page.click(buttonBarClass + ' *:nth-child(3)');
@@ -187,20 +187,20 @@ const getBetsInPage = async (page) => {
       let idStr = ''
       let type = ''
       // let typeAndIdClass = '.sc-bOCYYb.dGaSSa'
-      let typeAndIdClass = 'div > div.sc-fgrSAo.jwvWsc > div > div:nth-child(1)'
+      let typeAndIdClass = 'div > div.sc-dvpmds.FamYe > div > div:nth-child(1)'
       if (element.querySelector(typeAndIdClass)) {
         idStr = element.querySelector(typeAndIdClass).innerText.trim();
       }
 
       let _id = idStr.substr(idStr.indexOf('/') + 1, idStr.length).trim()
 
-      let typeClass = '.sc-jotlie.dcXTvK'
+      let typeClass = '.sc-eqPNPO'
       if (element.querySelector(typeClass)) {
         type = element.querySelector(typeClass).innerText.trim();
       }
 
       // let eventBlockClass = '.sc-dwztqd.bGlDAb'
-      let eventBlockClass = 'div > div:nth-child(2) > div div.bGlDAb'
+      let eventBlockClass = 'div > div:nth-child(2) > div'
       let eventElmts = element.querySelectorAll(eventBlockClass);
       let events = [];
 
@@ -212,7 +212,7 @@ const getBetsInPage = async (page) => {
         let timeStr = ''
 
         // let eventNameClass = '.sc-hvvHee.fmdlja'
-        let eventNameClass = 'div.sc-bYnzgO.eobKac > span'
+        let eventNameClass = 'div.sc-OxbzP.cbpAKW > span'
         if (eventElmt.querySelector(eventNameClass)) {
           eventName = eventElmt.querySelector(eventNameClass).innerText.trim()
         }
@@ -256,10 +256,10 @@ const getBetsInPage = async (page) => {
 
             let descElmts = descBlockQuery
             for (var descElmt of descElmts) {
-
-              betDesc = descElmt.innerText.trim()
-              betTechnique = getBetTechniqueFromBetDesc(betDesc)
-
+              if (descElmt) {
+                betDesc = descElmt.innerText.trim()
+                betTechnique = getBetTechniqueFromBetDesc(betDesc)
+              }
               events.push({
                 sport,
                 eventName,
@@ -276,26 +276,25 @@ const getBetsInPage = async (page) => {
           }
         } else {
           // NOT MYMATCH
-          const betDescQuery = eventElmt.querySelector('div > div.sc-cPuPxo.eJSuSC > span:nth-child(1)')
+          const betDescQuery = eventElmt.querySelector('div > div.sc-lnrBVv.dpQHjv > span:nth-child(1)')
           if (betDescQuery) {
             betDesc = betDescQuery.innerText.trim();
           }
           betTechnique = getBetTechniqueFromBetDesc(betDesc)
 
           let betOdds = ''
-          const betOddsQuery = eventElmt.querySelector('div > div.sc-cPuPxo.eJSuSC > span:nth-child(2) > b')
+          const betOddsQuery = eventElmt.querySelector('div > div.sc-lnrBVv.dpQHjv > span:nth-child(2) > b')
           if (betOddsQuery) {
             let betOddsStr = betOddsQuery.innerText.trim();
             betOddsStr = betOddsStr.replace(',', '.')
             betOdds = parseFloat(betOddsStr)
           }
           let eventResult = ''
-          const eventResultQuery = eventElmt.querySelector('div > div.sc-iIHjhz.cHneYR');
+          const eventResultQuery = eventElmt.querySelector('div > div.sc-dXfzlN.gIyIhA');
           if (eventResultQuery) {
             eventResult = eventResultQuery.innerText.trim();
           }
-
-          let svgPath = element.querySelector('div > div.sc-bYnzgO.eobKac > span > svg > path').getAttribute('d')
+          let svgPath = element.querySelector('div > div.sc-OxbzP.cbpAKW> span > svg > path').getAttribute('d')
           let sport = getSportFromSvgPath(svgPath)
 
           events.push({
@@ -316,11 +315,21 @@ const getBetsInPage = async (page) => {
       }
 
       let newerFirst = (a, b) => {
-        return (new Date(a.eventTime) < new Date(b.eventTime)) ? 1 : (new Date(b.eventTime) < new Date(a.eventTime) ? -1 : 0)
+        if (a && b) {
+          return (new Date(a.eventTime) < new Date(b.eventTime)) ? 1 : (new Date(b.eventTime) < new Date(a.eventTime) ? -1 : 0)
+        } else {
+          return 1
+        }
       }
 
-      let betResultTime = events.sort(newerFirst)[0].eventTime
-      const miseQuery = element.querySelector('div > div.sc-cNQqM.hDsYXc > div > span:nth-child(1) > b')
+      console.log('events')
+      console.log(events)
+      let betResultTime = 0
+      if (events.sort(newerFirst)[0] !== undefined) {
+
+        betResultTime = events.sort(newerFirst)[0].eventTime
+      }
+      const miseQuery = element.querySelector('div > div.sc-bOCYYb.gMnNnl > div > span:nth-child(1) > b')
       let miseString = ''
       if (miseQuery) {
         miseString = miseQuery.innerText.trim()
@@ -329,20 +338,25 @@ const getBetsInPage = async (page) => {
       if (type.includes('SIMPLE')) {
         oddsStr = events[0].betOdds
       } else if (type.includes('COMBIN')) {
-        const oddsQuery = element.querySelector('div > div.sc-cNQqM.hDsYXc > div > span:nth-child(2) > b')
+        const oddsQuery = element.querySelector('div > div.sc-bOCYYb.gMnNnl > div > span:nth-child(2) > b')
         if (oddsQuery) {
           oddsStr = parseFloat(oddsQuery.innerText.trim().replace(',', '.'))
         }
       }
       let odds = oddsStr
       let status = ''
-      const statusQuery = element.querySelector('div > div.sc-fgrSAo.jwvWsc > div > div:nth-child(2) > span')
+      const statusQuery = element.querySelector('div > div.sc-dvpmds.FamYe > div > div:nth-child(2) > span')
       if (statusQuery) {
         status = statusQuery.innerText.trim()
       }
-      let betTimeClass = '.sc-eqPNPO.kdGAib'
-      let betTimeStr = element.querySelector(betTimeClass + ' .time').innerText.trim().replace('à ', '')
-      let betTime = convertDateStrToIsoString(betTimeStr)
+      let betTimeClass = '.sc-clBsIJ.kvzifw'
+      const betTimeQuery = element.querySelector(betTimeClass + ' .time');
+      let betTime = ''
+      if (betTimeQuery) {
+
+        let betTimeStr = betTimeQuery.innerText.trim().replace('à ', '')
+        betTime = convertDateStrToIsoString(betTimeStr)
+      }
 
 
       let miseString2 = miseString.substr(0, miseString.indexOf('€')).replace(',', '.').trim()
@@ -352,10 +366,13 @@ const getBetsInPage = async (page) => {
       let resultString1 = ''
       let resultString2 = ''
       if (status.includes('GAGN') || status.includes('CASHOUT')) {
-        resultString0 = element.querySelector('.sc-jHXLhC:nth-child(3)').innerText.trim()
-        resultString1 = resultString0.substr(resultString0.indexOf('ains') + 6, resultString0.length).trim()
-        resultString2 = resultString1.substr(0, resultString1.indexOf('€')).replace(',', '.').trim();
-        result = Math.round((parseFloat(resultString2) - mise) * 100) / 100;
+        const resultQuery = element.querySelector('.sc-jHXLhC:nth-child(3)');
+        if (resultQuery) {
+          resultString0 = resultQuery.innerText.trim()
+          resultString1 = resultString0.substr(resultString0.indexOf('ains') + 6, resultString0.length).trim()
+          resultString2 = resultString1.substr(0, resultString1.indexOf('€')).replace(',', '.').trim();
+          result = Math.round((parseFloat(resultString2) - mise) * 100) / 100;
+        }
       } else if (status.includes('PERDU')) {
         result = -mise
       }

@@ -89,7 +89,7 @@
                 ng-class="{'to-bet': eventToBet.nextMatch.awayTeam == eventToBet.team}"
                 class="awayTeam">{{eventToBet.nextMatch.awayTeam}}</span></h2>
         <h3 ng-repeat="method in eventToBet.mustBetObj">
-          <span>{{method.methodName}} </span>I: <span style="color:blue">{{method.iteration}}</span> LVL: <span
+          <span>{{method.methodName}} </span>MAX: <span style="color:blue">{{method.maxIteration}}</span> Q95: <span style="color:blue">{{method.quartile95}}</span> LVL: <span
             style="color:red">{{method.level}}</span>
           <md-button ng-disabled="method.disabled" ng-show="!method.alreadyBet" class="md-raised md-primary"
             ng-click="addBet(eventToBet, method)">add bet</md-button>
@@ -111,7 +111,7 @@
                   ng-class="{'to-bet': eventToBet.nextMatch.awayTeam == eventToBet.team}"
                   class="awayTeam">{{eventToBet.nextMatch.awayTeam}}</span></h2>
           <h3 ng-repeat="method in eventToBet.mustBetObj">
-            <span>{{method.methodName}} </span>I: <span style="color:blue">{{method.iteration}}</span> LVL: <span
+            <span>{{method.methodName}} </span>MAX: <span style="color:blue">{{method.maxIteration}}</span> Q95: <span style="color:blue">{{method.quartile95}}</span> LVL: <span
               style="color:red">{{method.level}}</span>
             <md-button ng-disabled="method.disabled" ng-show="!method.alreadyBet" class="md-raised md-primary"
               ng-click="addBet(eventToBet, method)">add bet</md-button>
@@ -135,7 +135,7 @@
                   ng-class="{'to-bet': eventToBet.nextMatch.awayTeam == eventToBet.team}"
                   class="awayTeam">{{eventToBet.nextMatch.awayTeam}}</span></h2>
           <h3 ng-repeat="method in eventToBet.mustBetObj">
-            <span>{{method.methodName}} </span>I: <span style="color:blue">{{method.iteration}}</span> LVL: <span
+            <span>{{method.methodName}} </span>MAX: <span style="color:blue">{{method.maxIteration}}</span> Q95: <span style="color:blue">{{method.quartile95}}</span> LVL: <span
               style="color:red">{{method.level}}</span>
             <md-button ng-disabled="method.disabled" ng-show="!method.alreadyBet" class="md-raised md-primary"
               ng-click="addBet(eventToBet, method)">add bet</md-button>
