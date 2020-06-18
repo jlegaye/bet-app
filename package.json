@@ -14,7 +14,7 @@
   },
   "homepage": "https://github.com/jlegaye/bet-app#readme",
   "dependencies": {
-    "angular": "^1.7.5",
+    "angular": "^1.8.0",
     "angular-loader": "^1.7.5",
     "angular-route": "^1.7.5",
     "cryptr": "^4.0.2",
