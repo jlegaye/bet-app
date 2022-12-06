@@ -18,7 +18,7 @@
     "angular-loader": "^1.7.5",
     "angular-route": "^1.7.5",
     "cryptr": "^4.0.2",
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "html5-boilerplate": "0.0.1",
     "intl": "^1.2.5",
     "js-base64": "^2.5.1",
@@ -29,7 +29,7 @@
   "devDependencies": {
     "angular-mocks": "^1.7.5",
     "cpx": "^1.5.0",
-    "http-server": "^0.11.1",
+    "http-server": "^0.11.2",
     "jasmine-core": "^3.3.0",
     "karma": "^3.1.1",
     "karma-chrome-launcher": "^2.2.0",
